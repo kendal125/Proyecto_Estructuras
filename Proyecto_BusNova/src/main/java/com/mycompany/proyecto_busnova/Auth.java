@@ -1,5 +1,4 @@
-
-package BusNovaTech;
+package com.mycompany.proyecto_busnova;
 
 import javax.swing.JOptionPane;
 

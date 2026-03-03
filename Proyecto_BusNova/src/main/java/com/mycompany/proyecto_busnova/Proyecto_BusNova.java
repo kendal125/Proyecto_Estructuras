@@ -1,13 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.proyecto_busnova;
 
 import javax.swing.JOptionPane;
 
 /**
  * @author barra
+ * Kendal Lopez corrales
+ * Matias Barrantes benavides
+ * Steven Mora Ortiz
+ * Santiago Barrantes salazar
  */
 public class Proyecto_BusNova {
 
