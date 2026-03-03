@@ -1,0 +1,69 @@
+public class Nodo {
+    int dato;        // aquí podemos usar el dato como ID del tiquete
+    Nodo siguiente;
+
+    public Nodo() { }
+
+    public Nodo(int dato, Nodo siguiente) {
+        this.dato = dato;
+        this.siguiente = siguiente;
+    }
+}
+
+public class Cola {
+    private Nodo frente;
+    private Nodo fin;
+
+    public Cola() {
+        frente = null;
+        fin = null;
+    }
+
+    // Encolar un tiquete (usamos el ID como dato)
+    public void encolar(int dato) {
+        Nodo nuevo = new Nodo(dato, null);
+        if (fin != null) {
+            fin.siguiente = nuevo;
+        }
+        fin = nuevo;
+        if (frente == null) {
+            frente = nuevo;
+        }
+    }
+
+    // Desencolar
+    public int desencolar() throws Exception {
+        if (frente == null) {
+            throw new Exception("La cola está vacía");
+        }
+        int valor = frente.dato;
+        frente = frente.siguiente;
+        if (frente == null) {
+            fin = null;
+        }
+        return valor;
+    }
+  // Ver frente
+    public int frente() throws Exception {
+        if (frente == null) {
+            throw new Exception("La cola está vacía");
+        }
+        return frente.dato;
+    }
+
+    // Verificar si está vacía
+    public boolean estaVacia() {
+        return frente == null;
+    }
+
+    // Mostrar cola
+    public void mostrarCola() {
+        Nodo actual = frente;
+        System.out.print("Cola: ");
+        while (actual != null) {
+            System.out.print(actual.dato + " ");
+            actual = actual.siguiente;
+        }
+        System.out.println();
+    }
+}
