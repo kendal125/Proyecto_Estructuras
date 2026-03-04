@@ -8,7 +8,13 @@ package com.mycompany.proyecto_busnova;
  *
  * @author lopez
  */
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import com.fasterxml.jackson.databind.ObjectMapper; // libreria Jackson, leer .json
 
 public class Sistema {
 
@@ -19,9 +25,13 @@ public class Sistema {
     public Sistema() {
         listaBuses = new ListaBuses();
         listaUsuarios = new ListaUsuarios();
+        
+        if (!listaUsuarios.validarLogin("admin", "admin")) {
+            listaUsuarios.agregarUsuario(new Usuario("admin", "admin"));
+        }
 
         if (existeConfig()) {
-            cargarConfiguracion();
+            cargarConfig();
         }
     }
     //Verifica si existe el archivo de configuración
@@ -52,7 +62,7 @@ public class Sistema {
             listaBuses.agregarBus(new Bus(i, 'N'));
         }
     }
-    //Crea varios buses según la cantidad indicada
+    //Crea varios usuarios según la cantidad indicada
     public void agregarUsuario(String user, String pass) {
         listaUsuarios.agregarUsuario(new Usuario(user, pass));
     }
@@ -76,22 +86,36 @@ public class Sistema {
             e.printStackTrace();
         }
     }
-    //Carga el nombre de la terminal desde un archivo
-    public void cargarConfiguracion() {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("config.json"));
-            nombreTerminal = br.readLine();
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    
+    
     public ListaBuses getListaBuses() {
         return listaBuses;
     }
 
     public ListaUsuarios getListaUsuarios() {
         return listaUsuarios;
+    }
+    
+    //Carga el archivo
+    public void cargarConfig(){
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            Config config = mapper.readValue(new File("config.json"),Config.class);
+
+            this.nombreTerminal = config.terminal;
+
+            crearBuses(config.cantidadBuses);
+
+            for (Usuario user : config.usuarios) {
+                listaUsuarios.agregarUsuario(user);
+            }
+            
+            System.out.println("Usuarios cargados: " + config.usuarios.length);
+
+        } catch (Exception e) {
+            System.err.println("Error al leer Json");
+        }
     }
 }

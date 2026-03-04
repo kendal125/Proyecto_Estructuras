@@ -2,54 +2,43 @@ package com.mycompany.proyecto_busnova;
 
 import javax.swing.JOptionPane;
 
-
 public class Auth {
-    
-    private Usuario[] usuarios;
 
-    public Auth(Usuario[] usuarios) {
-        this.usuarios = usuarios;
+    private ListaUsuarios listaUsuarios;
+
+    public Auth(ListaUsuarios listaUsuarios) {
+        this.listaUsuarios = listaUsuarios;
     }
-    
-    public boolean login(String username, String Password){
 
-            if(username == null || Password == null){
-                return false;
-            }
-
-            for(int i = 0; i < usuarios.length; i++){
-                Usuario user = usuarios[i];
-                if (user == null){
-                    continue;
-                }
-                else if (user.getUsername().equals(username) && user.getPassword().equals(Password)){
-                    return true;
-                }
-            }
-        return false;
+    public String[] pedirCredenciales() {
+        String username = JOptionPane.showInputDialog("Ingrese usuario:");
+        String password = JOptionPane.showInputDialog("Ingrese contraseña:");
+        return new String[]{ username, password };
     }
-    
-    public boolean validarLogin(){
+
+    public boolean validarLogin() {
         int intentosMaximos = 3;
         int contador = 0;
-        
-        do{
-            String user = JOptionPane.showInputDialog("Ingrese Usuario: ");
-            String password = JOptionPane.showInputDialog("Contrasenia: ");
-            
-            if (login(user, password)) {
+
+        while (contador < intentosMaximos) {
+            String[] cred = pedirCredenciales();
+            String user = cred[0];
+            String pass = cred[1];
+
+            if (user == null || pass == null) return false; // cancelado
+
+            if (listaUsuarios.validarLogin(user, pass)) {
                 JOptionPane.showMessageDialog(null, "Bienvenido " + user);
                 return true;
-            } 
-            else {
-                contador++;
-                JOptionPane.showMessageDialog(null, "Credenciales incorrectas.\nIntentos restantes: " + (intentosMaximos - contador));
             }
 
-        } while (contador < intentosMaximos);
-        
-        
+            contador++;
+            JOptionPane.showMessageDialog(
+                null,
+                "Credenciales incorrectas.\nIntentos restantes: " + (intentosMaximos - contador)
+            );
+        }
+
         return false;
     }
-    
 }

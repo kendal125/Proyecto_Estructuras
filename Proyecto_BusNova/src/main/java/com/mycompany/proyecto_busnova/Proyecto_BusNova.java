@@ -12,8 +12,18 @@ import javax.swing.JOptionPane;
 public class Proyecto_BusNova {
 
     public static void main(String[] args) {
+        
+        
+       Sistema sistema = new Sistema();
+        
+        
+       Auth auth = new Auth(sistema.getListaUsuarios());
 
-        Sistema sistema = new Sistema();
+        if (!auth.validarLogin()) {
+            JOptionPane.showMessageDialog(null, "Acceso denegado.");
+            return;
+        }
+
 
         if (!sistema.existeConfig()) {
 

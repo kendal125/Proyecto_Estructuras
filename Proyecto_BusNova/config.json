@@ -1,1 +1,18 @@
-BusNova
+{
+  "terminal": "Terminal Central San Jose",
+  "cantidadBuses": 5,
+  "usuarios": [
+    {
+      "username": "Juan",
+      "password": "1234"
+    },
+    {
+      "username": "steven",
+      "password": "abcd"
+    },
+    {
+      "username": "Steven",
+      "password": "pass2025"
+    }
+  ]
+}
