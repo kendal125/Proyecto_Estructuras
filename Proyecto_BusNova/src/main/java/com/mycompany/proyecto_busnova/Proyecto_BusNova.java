@@ -3,6 +3,23 @@ package com.mycompany.proyecto_busnova;
 import javax.swing.JOptionPane;
 
 /**
+ * Clase principal del sistema BusNova.
+ * <p>
+ * Contiene el método {@code main} que inicia la ejecución del programa.
+ * Se encarga de:
+ * <ul>
+ *   <li>Inicializar el sistema</li>
+ *   <li>Gestionar la autenticación de usuarios</li>
+ *   <li>Configurar el sistema si no existe una configuración previa</li>
+ *   <li>Mostrar el menú principal de opciones</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * El sistema permite administrar una terminal de buses, incluyendo la creación
+ * de buses, gestión de usuarios y configuración de la terminal.
+ * </p>
+ * 
  * @author barra
  * Kendal Lopez corrales
  * Matias Barrantes benavides
