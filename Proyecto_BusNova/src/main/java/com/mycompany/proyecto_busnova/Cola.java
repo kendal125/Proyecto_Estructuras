@@ -5,20 +5,55 @@
 package com.mycompany.proyecto_busnova;
 
 /**
- *
- * @author lopez
+ * Implementación de una estructura de datos tipo cola (FIFO - First In, First Out).
+ * <p>
+ * Esta clase permite almacenar elementos en una secuencia donde el primer elemento
+ * en entrar es el primero en salir. Se utiliza una estructura enlazada mediante nodos.
+ * </p>
+ * 
+ * <p>
+ * Funcionalidades principales:
+ * <ul>
+ *   <li>Encadenar elementos (encolar)</li>
+ *   <li>Remover elementos (desencolar)</li>
+ *   <li>Consultar el frente de la cola</li>
+ *   <li>Verificar si está vacía</li>
+ *   <li>Mostrar todos los elementos</li>
+ * </ul>
+ * </p>
+ * 
  */
 public class Cola {
 
+    /**
+     * Nodo que representa el frente de la cola (primer elemento).
+     */
     private Nodo frente;
+    
+    /**
+     * Nodo que representa el final de la cola (último elemento).
+     */
     private Nodo fin;
 
+    /**
+     * Constructor de la clase Cola.
+     * <p>
+     * Inicializa una cola vacía sin elementos.
+     * </p>
+     */
     public Cola() {
         frente = null;
         fin = null;
     }
 
-    // Encolar un tiquete (usamos el ID como dato)
+    /**
+     * Inserta un nuevo elemento al final de la cola.
+     * <p>
+     * El elemento se agrega en la última posición (fin).
+     * </p>
+     *
+     * @param dato objeto que se desea agregar a la cola
+     */
     public void encolar(Object dato) {
         Nodo nuevo = new Nodo(dato);
         if (fin != null) {
@@ -30,7 +65,12 @@ public class Cola {
         }
     }
 
-    // Desencolar
+    /**
+     * Remueve y retorna el elemento al frente de la cola.
+     *
+     * @return el elemento que estaba al frente de la cola
+     * @throws Exception si la cola está vacía
+     */
     public Object desencolar() throws Exception {
         if (frente == null) {
             throw new Exception("La cola está vacía");
@@ -43,7 +83,12 @@ public class Cola {
         return valor;
     }
 
-    // Ver frente
+    /**
+     * Obtiene el elemento al frente de la cola sin removerlo.
+     *
+     * @return el elemento al frente de la cola
+     * @throws Exception si la cola está vacía
+     */
     public Object frente() throws Exception {
         if (frente == null) {
             throw new Exception("La cola está vacía");
@@ -51,12 +96,22 @@ public class Cola {
         return frente.getDato();
     }
 
-    // Verificar si está vacía
+    /**
+     * Verifica si la cola está vacía.
+     *
+     * @return {@code true} si la cola no contiene elementos,
+     * {@code false} en caso contrario
+     */
     public boolean estaVacia() {
         return frente == null;
     }
 
-    // Mostrar cola
+    /**
+     * Muestra todos los elementos de la cola en consola.
+     * <p>
+     * Recorre la cola desde el frente hasta el final imprimiendo cada dato.
+     * </p>
+     */
     public void mostrarCola() {
         Nodo actual = frente;
         System.out.print("Cola: ");
