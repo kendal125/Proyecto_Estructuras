@@ -1,0 +1,14 @@
+{
+  "terminal" : "Terminal",
+  "cantidadBuses" : 2,
+  "usuarios" : [ {
+    "username" : "admin",
+    "password" : "admin"
+  }, {
+    "username" : "stmora",
+    "password" : "1234"
+  }, {
+    "username" : "stmora",
+    "password" : "1234"
+  } ]
+}

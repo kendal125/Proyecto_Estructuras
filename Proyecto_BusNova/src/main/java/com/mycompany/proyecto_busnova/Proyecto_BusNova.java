@@ -74,7 +74,9 @@ public class Proyecto_BusNova {
             switch (opcion) {
 
                 case 1:
-                    sistema.agregarBusExtra();
+                    //sistema.agregarBusExtra();
+                    int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cuantos buses desea Agregar: "));
+                    sistema.agregarBuses(cantidad);
                     JOptionPane.showMessageDialog(null, "Bus agregado correctamente.");
                     break;
 

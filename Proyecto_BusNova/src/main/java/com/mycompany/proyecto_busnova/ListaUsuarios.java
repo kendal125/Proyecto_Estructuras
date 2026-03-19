@@ -44,4 +44,32 @@ public class ListaUsuarios {
     public Nodo getCabeza() {
         return cabeza;
     }
+    
+    public Usuario[] getUsuarios() {
+
+        // contar usuarios
+        int contador = 0;
+        Nodo actual = cabeza;
+
+        while (actual != null) {
+            contador++;
+            actual = actual.getSiguiente(); // recorrer Lista
+        }
+
+        // Crear array
+        Usuario[] usuarios = new Usuario[contador];
+
+        // llenar lista
+        actual = cabeza;
+        int i = 0;
+
+        while (actual != null) {
+            usuarios[i] = (Usuario) actual.getDato();
+            actual = actual.getSiguiente();
+            i++;
+        }
+
+        return usuarios;
+    }
+    
 }

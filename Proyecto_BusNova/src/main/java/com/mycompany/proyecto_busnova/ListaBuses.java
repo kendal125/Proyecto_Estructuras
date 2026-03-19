@@ -37,4 +37,16 @@ public class ListaBuses {
     public int getCantidad() {
         return cantidad;
     }
+     /*
+    public void agregarVariosBuses(int cantidadBuses) {
+       
+        int idInicial = cantidad + 1;
+
+        for (int i = 0; i < cantidadBuses; i++) {
+            Bus busNuevo = new Bus(idInicial + i, 'N');
+            agregarBus(busNuevo);
+        }
+        
+    }
+*/
 }
