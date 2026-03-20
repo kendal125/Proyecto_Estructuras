@@ -31,16 +31,7 @@ public class Proyecto_BusNova {
     public static void main(String[] args) {
         
         
-       Sistema sistema = new Sistema();
-        
-        
-       Auth auth = new Auth(sistema.getListaUsuarios());
-
-        if (!auth.validarLogin()) {
-            JOptionPane.showMessageDialog(null, "Acceso denegado.");
-            return;
-        }
-
+        Sistema sistema = new Sistema();
 
         if (!sistema.existeConfig()) {
 
@@ -73,14 +64,28 @@ public class Proyecto_BusNova {
             JOptionPane.showMessageDialog(null, "Sistema configurado correctamente.");
         }
 
+        Auth auth = new Auth(sistema.getListaUsuarios());
+
+        if (!auth.validarLogin()) {
+            JOptionPane.showMessageDialog(null, "Acceso denegado.");
+            return;
+        }
+        
         int opcion;
 
         do {
 
             String menu = "TERMINAL DE BUSES: " + sistema.getNombreTerminal() + "\n\n"
-                    + "1. Agregar bus\n"
-                    + "2. Cambiar nombre terminal\n"
-                    + "3. Salir";
+                    + "1. Configuración del sistema \n"
+                    + "2. Administrar buses\n"
+                    + "3. Administrar usuarios\n"
+                    + "4. Gestión de tiquetes\n"
+                    + "5. Atención de tiquetes\n"
+                    + "6. Consulta de colas\n"
+                    + "7. Rutas y grafo\n"
+                    + "8. Consulta BCCR\n"
+                    + "9. Reportes\n"
+                    + "10. Salir\n";
 
             String entrada = JOptionPane.showInputDialog(menu);
 
@@ -91,10 +96,14 @@ public class Proyecto_BusNova {
             switch (opcion) {
 
                 case 1:
+                    MenuConfigSistema.mostrarMenu(sistema);
+                    
+                    /*
                     //sistema.agregarBusExtra();
                     int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cuantos buses desea Agregar: "));
                     sistema.agregarBuses(cantidad);
                     JOptionPane.showMessageDialog(null, "Bus agregado correctamente.");
+                    */
                     break;
 
                 case 2:
@@ -106,14 +115,36 @@ public class Proyecto_BusNova {
                     break;
 
                 case 3:
+                    break;
+                    
+                case 4:
+                    break;
+                    
+                case 5:
+                    break;
+                    
+                case 6:
+                    break;
+                    
+                case 7:
+                    break;
+                    
+                case 8:
+                    break;
+                    
+                case 9:
+                    break;
+                    
+                case 10:
                     JOptionPane.showMessageDialog(null, "Saliendo...");
                     break;
-
+                    
+            
                 default:
                     JOptionPane.showMessageDialog(null, "Opción no permitida.");
             }
 
-        } while (opcion != 3);
+        } while (opcion != 10);
     }
 }
 
