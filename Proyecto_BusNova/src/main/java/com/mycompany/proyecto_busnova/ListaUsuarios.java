@@ -125,4 +125,55 @@ public class ListaUsuarios {
         return usuarios;
     }
     
+    /**
+    * Genera una representación en texto de todos los usuarios registrados.
+    * Recorre la lista enlazada y construye un String con el nombre de usuario
+    * de cada elemento almacenado.
+    *
+    * @return Un String con los usuarios registrados. Si no hay usuarios,
+    * retorna un mensaje indicando que la lista está vacía.
+    */
+    public String mostrarUsuarios() {
+        if (cabeza == null) {
+            return "No hay usuarios registrados.";
+        }
+
+        String usuariosRegistrados = "USUARIOS REGISTRADOS\n\n";
+        Nodo actual = cabeza;
+
+        while (actual != null) {
+            Usuario user = (Usuario) actual.getDato();
+            usuariosRegistrados += "Username: " + user.getUsername() + "\n";
+            actual = actual.getSiguiente();
+        }
+
+        return usuariosRegistrados;
+    }
+    
+    /**
+    * Verifica si un usuario existe en el sistema.
+    * <p>
+    * Este método delega la búsqueda a la lista de usuarios.
+    * </p>
+    *
+    * @param username nombre de usuario a buscar
+    * @return {@code true} si el usuario existe, {@code false} en caso contrario
+    */
+    public boolean existeUsuario(String username) {
+        Nodo actual = cabeza;
+
+        while (actual != null) {
+            Usuario user = (Usuario) actual.getDato();
+
+            if (user.getUsername().equals(username)) {
+                return true;
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        return false;
+    } 
+    
+    
 }

@@ -5,8 +5,29 @@
 package com.mycompany.proyecto_busnova;
 
 import javax.swing.JOptionPane;
-        
+
+/**
+ * Clase encargada de mostrar los menús del sistema.
+ * <p>
+ * Proporciona diferentes menús interactivos mediante cuadros de diálogo
+ * para gestionar la configuración, buses y usuarios del sistema.
+ * </p>
+ * 
+ * <p>
+ * Utiliza la clase {@link Sistema} para ejecutar las operaciones correspondientes
+ * según la opción seleccionada por el usuario.
+ * </p>
+ */
 public class MenuSistema {
+    /**
+     * Muestra el menú de configuración del sistema.
+     * <p>
+     * Permite visualizar la configuración actual, cambiar el nombre de la terminal
+     * y guardar los cambios.
+     * </p>
+     *
+     * @param sistema instancia del sistema a configurar
+     */
     public static void mostrarMenuConfig(Sistema sistema) {
 
         int opcion = 0;
@@ -55,6 +76,11 @@ public class MenuSistema {
         } while (opcion != 4);
     }
 
+    /**
+     * Muestra la configuración actual del sistema.
+     *
+     * @param sistema instancia del sistema
+     */
     private static void mostrarConfiguracion(Sistema sistema) {
         String info = "CONFIGURACIÓN ACTUAL\n\n"
                 + "Terminal: " + sistema.getNombreTerminal() + "\n"
@@ -64,6 +90,11 @@ public class MenuSistema {
         JOptionPane.showMessageDialog(null, info);
     }
 
+    /**
+     * Permite cambiar el nombre de la terminal.
+     *
+     * @param sistema instancia del sistema
+     */
     private static void cambiarNombre(Sistema sistema) {
         String nombre = JOptionPane.showInputDialog("Nuevo nombre de la terminal:");
 
@@ -75,6 +106,14 @@ public class MenuSistema {
         }
     }
     
+    /**
+     * Muestra el menú de administración de buses.
+     * <p>
+     * Permite visualizar buses, agregar nuevos y consultar la cantidad total.
+     * </p>
+     *
+     * @param sistema instancia del sistema
+     */
     public static void mostrarMenuAdminBuses(Sistema sistema){
         int opcion = 0;
         
@@ -88,10 +127,11 @@ public class MenuSistema {
             String seleccion = JOptionPane.showInputDialog(menu);
             if (seleccion == null) return;
             
+            opcion = Integer.parseInt(seleccion);
             try {
                 switch(opcion){
                     case 1:
-                        JOptionPane.showMessageDialog(null, sistema.getListaBuses());
+                        JOptionPane.showMessageDialog(null, sistema.mostrarBuses());
                         break;
                         
                     case 2:
@@ -119,36 +159,47 @@ public class MenuSistema {
         }while (opcion != 4);
     }
     
+    /**
+     * Muestra el menú de administración de usuarios.
+     *
+     * @param sistema instancia del sistema
+     */
     public static void mostrarMenuAdminUsuarios(Sistema sistema){
         int opcion = 0;
         
         do{
             String menu = "ADMINISTRAR Usuarios\n\n"
-                    + "1. \n"
-                    + "2. \n"
-                    + "3. \n"
-                    + "4. Volver\n";
+                    + "1. Ver usuarios registrados \n"
+                    + "2. Agregar usuarios\n"
+                    + "3. Volver\n";
 
             String seleccion = JOptionPane.showInputDialog(menu);
             if (seleccion == null) return;
             
+            opcion = Integer.parseInt(seleccion);
             try {
                 switch(opcion){
                     case 1:
-                        
+                        JOptionPane.showMessageDialog(null, sistema.mostrarUsuarios());
                         break;
                         
                     case 2:
+                        String username = JOptionPane.showInputDialog("Ingrese el nombre de usuario: ");
+                        String password = JOptionPane.showInputDialog("Ingrese la contrasenia: ");
+                        
+                        if (sistema.existeUsuario(username)) {
+                            JOptionPane.showMessageDialog(null, "El usuario ya existe.");
+                        } 
+                        else {
+                            sistema.agregarUsuario(username, password);
+                        }
                         
                         break;
                         
-                    case 3: 
-                        
-                        break;
-                        
-                    case 4:
+                    case 3:
                         JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                         break;
+                        
                     default:
                         JOptionPane.showMessageDialog(null, "Ingrese una opcion valida");
                         break;
@@ -157,7 +208,7 @@ public class MenuSistema {
             }catch (NumberFormatException e){
                 JOptionPane.showMessageDialog(null, "Ingrese un numero.");
             }
-        }while (opcion != 4);
+        }while (opcion != 3);
     }
     
     /*
@@ -174,6 +225,7 @@ public class MenuSistema {
             String seleccion = JOptionPane.showInputDialog(menu);
             if (seleccion == null) return;
             
+            opcion = Integer.parseInt(seleccion);
             try {
                 switch(opcion){
                     case 1:

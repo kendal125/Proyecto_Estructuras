@@ -97,24 +97,22 @@ public class Proyecto_BusNova {
 
                 case 1:
                     MenuSistema.mostrarMenuConfig(sistema);
-                    
-                    /*
-                    //sistema.agregarBusExtra();
-                    int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cuantos buses desea Agregar: "));
-                    sistema.agregarBuses(cantidad);
-                    JOptionPane.showMessageDialog(null, "Bus agregado correctamente.");
-                    */
+
                     break;
 
                 case 2:
+                    MenuSistema.mostrarMenuAdminBuses(sistema);
+                    /*
                     String nuevo = JOptionPane.showInputDialog("Nuevo nombre:");
                     if (nuevo != null && !nuevo.trim().equals("")) {
                         sistema.cambiarNombreTerminal(nuevo);
                         JOptionPane.showMessageDialog(null, "Su nombre asignado ha sido actualizado de manera exitosa.");
                     }
+                    */
                     break;
 
                 case 3:
+                    MenuSistema.mostrarMenuAdminUsuarios(sistema);
                     break;
                     
                 case 4:

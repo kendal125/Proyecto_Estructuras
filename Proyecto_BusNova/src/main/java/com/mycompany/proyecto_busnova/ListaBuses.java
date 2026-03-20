@@ -79,5 +79,47 @@ public class ListaBuses {
         return cantidad;
     }
     
+    /**
+    * Genera una representación en texto de todos los buses registrados en la lista.
+    * Recorre la lista enlazada de buses y construye un String con la información
+    * de cada bus (ID y tipo).
+    *
+    * @return Un String con la lista de buses registrados. Si no hay buses,
+    * retorna un mensaje indicando que la lista está vacía.
+    */
+    public String mostrarBuses() {
+        if (primero == null) {
+            return "No hay buses registrados.";
+        }
+
+        String busesRegistrados = "BUSES REGISTRADOS\n\n";
+        Nodo actual = primero;
+
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+            
+            String tipo = "";
+            
+            switch (bus.getTipo()) {
+                case 'P':
+                    tipo = "Preferencial";
+                    break;
+                case 'D':
+                    tipo = "Directo";
+                    break;
+                case 'N':
+                    tipo = "Normal";
+                    break;
+                default:
+                    tipo = "Desconocido";
+                    break;
+            }
+            busesRegistrados += "ID: " + bus.getId() + " | Tipo: " + tipo + "\n";
+            actual = actual.getSiguiente();
+            
+        }    
+
+        return busesRegistrados;
+    }
 
 }

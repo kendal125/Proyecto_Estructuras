@@ -167,6 +167,16 @@ public class Sistema {
     public ListaBuses getListaBuses() {
         return listaBuses;
     }
+    
+    /**
+    * Obtiene la lista de buses registrados en el sistema en formato de texto.
+    * Este método actúa como intermediario entre el menú y la estructura de datos.
+    *
+    * @return Un String con la información de los buses registrados.
+    */
+    public String mostrarBuses() {
+        return listaBuses.mostrarBuses();
+    }
 
     /**
      * Obtiene la lista de usuarios.
@@ -177,7 +187,16 @@ public class Sistema {
         return listaUsuarios;
     }
     
-   
+    /**
+    * Obtiene la lista de usuarios registrados en el sistema en formato de texto.
+    * Este método actúa como intermediario entre el menú y la estructura de datos.
+    *
+    * @return Un String con la información de los usuarios registrados.
+    */
+    public String mostrarUsuarios() {
+        return listaUsuarios.mostrarUsuarios();
+    }
+    
     /**
      * Carga la configuración desde el archivo config.json.
      * <p>
@@ -206,6 +225,18 @@ public class Sistema {
         }
     }
     
+    /**
+    * Verifica si un usuario existe en el sistema.
+    * <p>
+    * Este método delega la validación a la lista de usuarios.
+    * </p>
+    *
+    * @param username nombre de usuario a buscar
+    * @return {@code true} si el usuario existe, {@code false} en caso contrario
+    */
+    public boolean existeUsuario(String username) {
+        return listaUsuarios.existeUsuario(username);
+    }
     
     /**
      * Guarda la configuración actual en el archivo {@code config.json}.
