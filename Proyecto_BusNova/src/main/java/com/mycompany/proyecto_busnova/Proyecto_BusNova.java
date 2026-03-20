@@ -96,7 +96,7 @@ public class Proyecto_BusNova {
             switch (opcion) {
 
                 case 1:
-                    MenuConfigSistema.mostrarMenu(sistema);
+                    MenuSistema.mostrarMenuConfig(sistema);
                     
                     /*
                     //sistema.agregarBusExtra();
