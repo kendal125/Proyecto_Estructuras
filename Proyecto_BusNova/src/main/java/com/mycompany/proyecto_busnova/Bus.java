@@ -4,6 +4,9 @@
  */
 package com.mycompany.proyecto_busnova;
 
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  * Clase que representa un Bus dentro del sistema.
  * <p>
@@ -112,4 +115,69 @@ public class Bus {
     public void setInspectorOcupado(boolean inspectorOcupado) {
         this.inspectorOcupado = inspectorOcupado;
     }
+    
+    
+     /**
+     * Procesa el abordaje del siguiente tiquete en la cola del bus.
+     * <p>
+     * Si el pasajero paga, se marca como ATENDIDO y se guarda en
+     * atendidos.json. Si se niega, se elimina de la cola y no se marca como
+     * atendido.
+     * </p>
+     *
+     * @param sistema referencia al sistema para cálculo de precio y
+     * persistencia
+     */
+    public void abordar(Sistema sistema) {
+        try {
+            if (cola.estaVacia()) {
+                JOptionPane.showMessageDialog(null, "No hay tiquetes en la cola del bus " + id);
+                return;
+            }
+            if (inspectorOcupado) {
+                JOptionPane.showMessageDialog(null, "Inspector del bus " + id + " está ocupado.");
+                return;
+            }
+
+            Tiquete t = cola.peekTiquete();
+            if (t == null) {
+                return;
+            }
+
+            t.setEstado(Tiquete.Estado.EN_ATENCION);
+            t.setHoraAtencion(new Date());
+            t.setBusAsignadoId(this.id);
+            this.inspectorOcupado = true;
+
+            double precio = sistema.calcularPrecio(t);
+            t.setPrecioCalculado(precio);
+
+            String mensaje = "Tiquete ID: " + t.getId() + "\nServicio: " + t.getTipoServicio()
+                    + "\nPrecio: " + precio + "\n¿Desea pagar y abordar?";
+            int resp = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar pago", JOptionPane.YES_NO_OPTION);
+
+            if (resp == JOptionPane.YES_OPTION) {
+                cola.desencolarTiquete();
+                t.setEstado(Tiquete.Estado.ATENDIDO);
+                t.setHoraAtencion(new Date());
+                sistema.guardarAtendido(t);
+                JOptionPane.showMessageDialog(null, "Tiquete atendido y subió al bus " + id);
+            } else {
+                cola.desencolarTiquete();
+                JOptionPane.showMessageDialog(null, "El pasajero fue retirado de la fila por negarse a pagar.");
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al procesar abordaje: " + e.getMessage());
+        } finally {
+            this.inspectorOcupado = false;
+        }
+
+    }
+    
+    
+    
+    
+    
+    
 }
