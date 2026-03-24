@@ -22,6 +22,8 @@ package com.mycompany.proyecto_busnova;
  */
 
 public class ListaBuses {
+    
+   
 
     /**
      * Nodo que representa el primer elemento de la lista.
@@ -43,6 +45,16 @@ public class ListaBuses {
         primero = null;
         cantidad = 0;
     }
+
+    public Nodo getPrimero() {
+        return primero;
+    }
+
+    public void setPrimero(Nodo primero) {
+        this.primero = primero;
+    }
+    
+    
 
     /**
      * Agrega un nuevo bus al final de la lista.

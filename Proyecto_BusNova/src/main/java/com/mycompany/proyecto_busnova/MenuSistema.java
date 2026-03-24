@@ -140,11 +140,11 @@ public class MenuSistema {
                         sistema.agregarBuses(cantidad);
                         JOptionPane.showMessageDialog(null, "Bus agregado correctamente.");
                         break;
-                        
-                    case 3: 
+
+                    case 3:
                         JOptionPane.showMessageDialog(null, "Cantidad de buses actual: " + sistema.getListaBuses().getCantidad() + "\n");
                         break;
-                        
+
                     case 4:
                         JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                         break;
@@ -152,65 +152,179 @@ public class MenuSistema {
                         JOptionPane.showMessageDialog(null, "Ingrese una opcion valida");
                         break;
                 }
-                
-            }catch (NumberFormatException e){
+
+            } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Ingrese un numero.");
             }
-        }while (opcion != 4);
+        } while (opcion != 4);
     }
-    
+
     /**
      * Muestra el menú de administración de usuarios.
      *
      * @param sistema instancia del sistema
      */
-    public static void mostrarMenuAdminUsuarios(Sistema sistema){
+    public static void mostrarMenuAdminUsuarios(Sistema sistema) {
         int opcion = 0;
-        
-        do{
+
+        do {
             String menu = "ADMINISTRAR Usuarios\n\n"
                     + "1. Ver usuarios registrados \n"
                     + "2. Agregar usuarios\n"
                     + "3. Volver\n";
 
             String seleccion = JOptionPane.showInputDialog(menu);
-            if (seleccion == null) return;
-            
+            if (seleccion == null) {
+                return;
+            }
+
             opcion = Integer.parseInt(seleccion);
             try {
-                switch(opcion){
+                switch (opcion) {
                     case 1:
                         JOptionPane.showMessageDialog(null, sistema.mostrarUsuarios());
                         break;
-                        
+
                     case 2:
                         String username = JOptionPane.showInputDialog("Ingrese el nombre de usuario: ");
                         String password = JOptionPane.showInputDialog("Ingrese la contrasenia: ");
-                        
+
                         if (sistema.existeUsuario(username)) {
                             JOptionPane.showMessageDialog(null, "El usuario ya existe.");
-                        } 
-                        else {
+                        } else {
                             sistema.agregarUsuario(username, password);
                         }
-                        
+
                         break;
-                        
+
                     case 3:
                         JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                         break;
-                        
+
                     default:
                         JOptionPane.showMessageDialog(null, "Ingrese una opcion valida");
                         break;
                 }
-                
-            }catch (NumberFormatException e){
+
+            } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Ingrese un numero.");
             }
-        }while (opcion != 3);
+        } while (opcion != 3);
     }
-    
+
+    public static void mostrarMenuTiquetes(Sistema sistema) {
+        int opcion = 0;
+
+        do {
+            String menu = "ATENCIÓN DE TIQUETES\n\n"
+                    + "1. Crear tiquete\n"
+                    + "2. Abordar (atender siguiente)\n"
+                    + "3. Volver\n";
+
+            String seleccion = JOptionPane.showInputDialog(menu);
+            if (seleccion == null) {
+                return;
+            }
+
+            try {
+                opcion = Integer.parseInt(seleccion);
+
+                switch (opcion) {
+
+                    case 1:
+                        crearTiqueteUI(sistema);
+                        break;
+
+                    case 2:
+                        abordarUI(sistema);
+                        break;
+
+                    case 3:
+                        JOptionPane.showMessageDialog(null, "Volviendo...");
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opción inválida");
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+            }
+
+        } while (opcion != 3);
+    }
+
+    private static void crearTiqueteUI(Sistema sistema) {
+        String id = JOptionPane.showInputDialog("ID:");
+
+        String tipoStr = JOptionPane.showInputDialog("Tipo: VIP, REGULAR, CARGA, EJECUTIVO");
+
+        double peso = 0;
+        if (tipoStr.equals("CARGA")) {
+            peso = Double.parseDouble(JOptionPane.showInputDialog("Peso:"));
+        }
+
+        int busId = Integer.parseInt(JOptionPane.showInputDialog("Bus ID:"));
+
+        Tiquete t = new Tiquete(
+                id,
+                Tiquete.TipoServicio.valueOf(tipoStr),
+                peso,
+                new java.util.Date(),
+                null,
+                Tiquete.Estado.PENDIENTE,
+                busId,
+                sistema.getNombreTerminal(),
+                0
+        );
+
+        sistema.crearTiquete(t, busId);
+    }
+
+    private static void abordarUI(Sistema sistema) {
+        int busId = Integer.parseInt(JOptionPane.showInputDialog("Bus ID:"));
+        sistema.abordar(busId);
+    }
+
+    // Menú para crear tiquete y asignarlo automáticamente
+    public static void mostrarMenuCrearTiquete(Sistema sistema) {
+        String id = JOptionPane.showInputDialog("ID del tiquete:");
+        if (id == null || id.trim().isEmpty()) {
+            return;
+        }
+
+        String[] opciones = {"VIP", "REGULAR", "CARGA", "EJECUTIVO"};
+        String tipoStr = (String) JOptionPane.showInputDialog(null,"Seleccione tipo de servicio:", "Tipo de servicio",
+                JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+        if (tipoStr == null) {
+            return;
+        }
+
+        Tiquete.TipoServicio tipo = Tiquete.TipoServicio.valueOf(tipoStr);
+
+        double peso = 0;
+        if (tipo == Tiquete.TipoServicio.CARGA) {
+            peso = Double.parseDouble(JOptionPane.showInputDialog("Ingrese peso de carga:"));
+        }
+
+        Tiquete t = new Tiquete(id, tipo, peso, new java.util.Date(),
+                null, Tiquete.Estado.PENDIENTE, -1, sistema.getNombreTerminal(), 0);
+
+        sistema.asignarTicketABus(t);
+    }
+
+// Menú para abordar/atender tiquete
+    public static void mostrarMenuAbordarTiquete(Sistema sistema) {
+        int busId = Integer.parseInt(JOptionPane.showInputDialog("Ingrese ID del bus para atender tiquete:"));
+        sistema.atenderTiquete(busId);
+    }
+
+// Menú para mostrar colas de todos los buses
+    public static void mostrarMenuConsultarColas(Sistema sistema) {
+        JOptionPane.showMessageDialog(null, sistema.mostrarColas());
+    }
+
     /*
     public static void mostrarMenuTemplate(Sistema sistema){
         int opcion = 0;
@@ -253,5 +367,5 @@ public class MenuSistema {
             }
         }while (opcion != 4);
     }
-    */
+ */
 }

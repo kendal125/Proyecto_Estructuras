@@ -28,6 +28,11 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.CARGA;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.EJECUTIVO;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.REGULAR;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.VIP;
+import javax.swing.JOptionPane;
 
 public class Sistema {
 
@@ -94,14 +99,14 @@ public class Sistema {
     public String getNombreTerminal() {
         return nombreTerminal;
     }
-    
+
     /**
      * Crea una cantidad específica de buses.
      * <p>
      * Los primeros dos buses son especiales:
      * <ul>
-     *   <li>ID 1 - tipo 'P' (Preferencial)</li>
-     *   <li>ID 2 - tipo 'D' (Directo)</li>
+     * <li>ID 1 - tipo 'P' (Preferencial)</li>
+     * <li>ID 2 - tipo 'D' (Directo)</li>
      * </ul>
      * Los demás buses son de tipo 'N' (Normal).
      * </p>
@@ -122,7 +127,168 @@ public class Sistema {
             listaBuses.agregarBus(new Bus(i, 'N'));
         }
     }
-    
+
+    /**
+     * Agrega un nuevo usuario al sistema.
+     *
+     * @param user nombre de usuario
+     * @param pass contraseña del usuario
+     */
+    //metodo
+    public void crearTiquete(Tiquete t, int busId) {
+        Bus bus = buscarBus(busId);
+        if (bus == null) {
+            System.out.println("Bus no encontrado");
+            return;
+        }
+        t.setBusAsignadoId(busId);
+        t.setEstado(Tiquete.Estado.PENDIENTE);
+
+        // si inspector libre y sin fila - atención inmediata
+        if (!bus.isInspectorOcupado() && bus.getCola().estaVacia()) {
+            atenderTiquete(bus, t);
+        } else {
+            bus.getCola().encolar(t);
+            System.out.println("Tiquete en cola");
+        }
+    }
+
+    //metodo
+    public void atenderTiquete(Bus bus, Tiquete t) {
+        bus.setInspectorOcupado(true);
+        t.setEstado(Tiquete.Estado.EN_ATENCION);
+        double precio = calcularPrecio(t);
+        t.setPrecioCalculado(precio);
+        // aquí podra validar pago extra
+        t.setEstado(Tiquete.Estado.ATENDIDO);
+        t.setHoraAtencion(new java.util.Date());
+        guardarAtendido(t);
+        bus.setInspectorOcupado(false);
+
+        System.out.println("Tiquete atendido: " + t.getId());
+    }
+
+    //metodo
+    public void abordar(int busId) {
+        Bus bus = buscarBus(busId);
+
+        if (bus == null) {
+            System.out.println("Bus no encontrado");
+            return;
+        }
+
+        if (bus.isInspectorOcupado()) {
+            System.out.println("Inspector ocupado");
+            return;
+        }
+
+        if (bus.getCola().estaVacia()) {
+            System.out.println("No hay personas en fila");
+            return;
+        }
+
+        try {
+            Tiquete t = (Tiquete) bus.getCola().desencolar();
+            atenderTiquete(bus, t);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    // Método para asignar un tiquete al bus correcto según tipo de servicio
+    public void asignarTicketABus(Tiquete t) {
+        Bus busAsignado = null;
+
+        switch (t.getTipoServicio()) {
+            case VIP:
+                busAsignado = buscarBusPorTipo('P');
+                break;
+            case EJECUTIVO:
+            case REGULAR:
+                busAsignado = buscarBusPorTipo('N');
+                break;
+            case CARGA:
+                busAsignado = buscarBusPorTipo('D');
+                break;
+        }
+
+        if (busAsignado != null) {
+            busAsignado.getCola().encolar(t);
+            t.setEstado(Tiquete.Estado.PENDIENTE);
+            t.setBusAsignadoId(busAsignado.getId());
+            JOptionPane.showMessageDialog(null, "Tiquete asignado al bus ID: " + busAsignado.getId());
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró un bus disponible para este tiquete.");
+        }
+    }
+
+// Método auxiliar: buscar primer bus de un tipo
+    private Bus buscarBusPorTipo(char tipo) {
+        Nodo actual = listaBuses.getPrimero();
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+            if (bus.getTipo() == tipo) {
+                return bus;
+            }
+            actual = actual.getSiguiente();
+        }
+        return null;
+    }
+
+// Atender tiquete del bus (desencolar)
+    public void atenderTiquete(int busId) {
+        Bus bus = buscarBus(busId);
+        if (bus == null) {
+            JOptionPane.showMessageDialog(null, "Bus no encontrado.");
+            return;
+        }
+
+        try {
+            Tiquete t = (Tiquete) bus.getCola().desencolar();
+            t.setEstado(Tiquete.Estado.EN_ATENCION);
+            t.setHoraAtencion(new java.util.Date());
+            t.setPrecioCalculado(calcularPrecio(t));
+
+            // Guardar como atendido
+            guardarAtendido(t);
+
+            JOptionPane.showMessageDialog(null, "Tiquete atendido ID: " + t.getId()
+                    + "\nPrecio: $" + t.getPrecioCalculado());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No hay tiquetes pendientes en el bus.");
+        }
+    }
+
+// Mostrar todas las colas de todos los buses
+    public String mostrarColas() {
+        StringBuilder sb = new StringBuilder();
+        Nodo actual = listaBuses.getPrimero();
+
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+            sb.append("Bus ID: ").append(bus.getId())
+                    .append(" | Tipo: ").append(bus.getTipo())
+                    .append(" | Tiquetes en cola: ");
+
+            Cola cola = bus.getCola();
+            Nodo nodoCola = cola.frente; // Accede al frente directamente
+
+            if (nodoCola == null) {
+                sb.append("0\n");
+            } else {
+                while (nodoCola != null) {
+                    Tiquete t = (Tiquete) nodoCola.getDato();
+                    sb.append(t.getId()).append(" ");
+                    nodoCola = nodoCola.getSiguiente();
+                }
+                sb.append("\n");
+            }
+            actual = actual.getSiguiente();
+        }
+
+        return sb.toString();
+    }
+
     /**
      * Agrega un nuevo usuario al sistema.
      *
@@ -132,7 +298,7 @@ public class Sistema {
     public void agregarUsuario(String user, String pass) {
         listaUsuarios.agregarUsuario(new Usuario(user, pass));
     }
-    
+
     /**
      * Cambia el nombre de la terminal y guarda la configuración.
      *
@@ -142,21 +308,39 @@ public class Sistema {
         this.nombreTerminal = nuevoNombre;
         guardarConfiguracion();
     }
-    
+
     /**
      * Agrega múltiples buses de tipo normal ('N').
      *
      * @param cantidadBuses cantidad de buses a agregar
      */
+    //metodo
+    public Bus buscarBus(int id) {
+
+        Nodo actual = listaBuses.getPrimero();
+
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+
+            if (bus.getId() == id) {
+                return bus;
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        return null;
+    }
+
     public void agregarBuses(int cantidadBuses) {
-       
-        int idInicial = listaBuses.getCantidad() + 1; 
+
+        int idInicial = listaBuses.getCantidad() + 1;
 
         for (int i = 0; i < cantidadBuses; i++) {
             Bus busNuevo = new Bus(idInicial + i, 'N');
             listaBuses.agregarBus(busNuevo);
         }
-        
+
     }
 
     /**
@@ -167,13 +351,14 @@ public class Sistema {
     public ListaBuses getListaBuses() {
         return listaBuses;
     }
-    
+
     /**
-    * Obtiene la lista de buses registrados en el sistema en formato de texto.
-    * Este método actúa como intermediario entre el menú y la estructura de datos.
-    *
-    * @return Un String con la información de los buses registrados.
-    */
+     * Obtiene la lista de buses registrados en el sistema en formato de texto.
+     * Este método actúa como intermediario entre el menú y la estructura de
+     * datos.
+     *
+     * @return Un String con la información de los buses registrados.
+     */
     public String mostrarBuses() {
         return listaBuses.mostrarBuses();
     }
@@ -264,4 +449,69 @@ public class Sistema {
            System.err.println("Error al escribir Json: " + e.getMessage());
         }
     }
+    
+     /**
+ * Calcula el precio del tiquete según las reglas de servicio.
+     *
+     * @param t tiquete a calcular
+     * @return precio calculado
+     */
+    public double calcularPrecio(Tiquete t) {
+        double precio = 0.0;
+        switch (t.getTipoServicio()) {
+            case VIP:
+                precio = 20 + 100;
+                break;
+            case REGULAR:
+                precio = 20;
+                break;
+            case CARGA:
+                precio = 20 + (10 * t.getPesoCarga());
+                break;
+            case EJECUTIVO:
+                precio = 20 + 1000;
+                break;
+        }
+        return precio;
+    }
+
+    /**
+     * Guarda un tiquete atendido en el archivo atendidos.json.
+     * <p>
+     * Si el archivo no existe, se crea con un arreglo que contiene el tiquete.
+     * Si ya existe, se lee el arreglo, se crea uno nuevo con espacio adicional
+     * y se agrega el nuevo tiquete.
+     * </p>
+     *
+     * @param t tiquete marcado como ATENDIDO
+     */
+    public void guardarAtendido(Tiquete t) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            File file = new File("atendidos.json");
+
+            Tiquete[] existentes;
+
+            if (file.exists()) {
+                // leer arreglo existente
+                existentes = mapper.readValue(file, Tiquete[].class);
+            } else {
+                existentes = new Tiquete[0];
+            }
+            // crear nuevo arreglo con espacio adicional
+            Tiquete[] nuevo = new Tiquete[existentes.length + 1];
+            for (int i = 0; i < existentes.length; i++) {
+                nuevo[i] = existentes[i];
+            }
+            nuevo[existentes.length] = t;
+
+            // sobrescribir archivo con arreglo actualizado
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, nuevo);
+
+            System.out.println("Tiquete guardado en atendidos.json: " + t.getId());
+        } catch (Exception e) {
+            System.err.println("Error guardando atendido: " + e.getMessage());
+        }
+    }
+    
 }

@@ -28,7 +28,7 @@ public class Cola {
     /**
      * Nodo que representa el frente de la cola (primer elemento).
      */
-    private Nodo frente;
+    Nodo frente;
     
     /**
      * Nodo que representa el final de la cola (último elemento).
