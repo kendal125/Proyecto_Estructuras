@@ -116,12 +116,15 @@ public class Proyecto_BusNova {
                     break;
                     
                 case 4:
+                    MenuSistema.mostrarMenuTiquetes(sistema);
                     break;
-                    
+
                 case 5:
+                    MenuSistema.mostrarMenuAbordarTiquete(sistema);
                     break;
-                    
+
                 case 6:
+                    MenuSistema.mostrarMenuConsultarColas(sistema);
                     break;
                     
                 case 7:

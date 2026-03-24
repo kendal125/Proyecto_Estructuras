@@ -1,0 +1,31 @@
+[ {
+  "id" : "1",
+  "tipoServicio" : "VIP",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1774323811178,
+  "horaAtencion" : 1774323811189,
+  "estado" : "ATENDIDO",
+  "busAsignadoId" : 1,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 120.0
+}, {
+  "id" : "1",
+  "tipoServicio" : "VIP",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1774325393514,
+  "horaAtencion" : 1774325393514,
+  "estado" : "ATENDIDO",
+  "busAsignadoId" : 1,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 120.0
+}, {
+  "id" : "12",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1774325434066,
+  "horaAtencion" : 1774325434066,
+  "estado" : "ATENDIDO",
+  "busAsignadoId" : 2,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0
+} ]
