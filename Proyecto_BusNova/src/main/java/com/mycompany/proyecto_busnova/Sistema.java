@@ -28,6 +28,10 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.CARGA;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.EJECUTIVO;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.REGULAR;
+import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.VIP;
 
 public class Sistema {
 
@@ -264,4 +268,74 @@ public class Sistema {
            System.err.println("Error al escribir Json: " + e.getMessage());
         }
     }
+    
+     /**
+ * Calcula el precio del tiquete según las reglas de servicio.
+     *
+     * @param t tiquete a calcular
+     * @return precio calculado
+     */
+    public double calcularPrecio(Tiquete t) {
+        double precio = 0.0;
+        switch (t.getTipoServicio()) {
+            case VIP:
+                precio = 20 + 100;
+                break;
+            case REGULAR:
+                precio = 20;
+                break;
+            case CARGA:
+                precio = 20 + (10 * t.getPesoCarga());
+                break;
+            case EJECUTIVO:
+                precio = 20 + 1000;
+                break;
+        }
+        return precio;
+    }
+
+    /**
+     * Guarda un tiquete atendido en el archivo atendidos.json.
+     * <p>
+     * Si el archivo no existe, se crea con un arreglo que contiene el tiquete.
+     * Si ya existe, se lee el arreglo, se crea uno nuevo con espacio adicional
+     * y se agrega el nuevo tiquete.
+     * </p>
+     *
+     * @param t tiquete marcado como ATENDIDO
+     */
+    public void guardarAtendido(Tiquete t) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            File file = new File("atendidos.json");
+
+            Tiquete[] existentes;
+
+            if (file.exists()) {
+                // leer arreglo existente
+                existentes = mapper.readValue(file, Tiquete[].class);
+            } else {
+                existentes = new Tiquete[0];
+            }
+            // crear nuevo arreglo con espacio adicional
+            Tiquete[] nuevo = new Tiquete[existentes.length + 1];
+            for (int i = 0; i < existentes.length; i++) {
+                nuevo[i] = existentes[i];
+            }
+            nuevo[existentes.length] = t;
+
+            // sobrescribir archivo con arreglo actualizado
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, nuevo);
+
+            System.out.println("Tiquete guardado en atendidos.json: " + t.getId());
+        } catch (Exception e) {
+            System.err.println("Error guardando atendido: " + e.getMessage());
+        }
+    }
+    
+    
+    
+    
+    
+    
 }
