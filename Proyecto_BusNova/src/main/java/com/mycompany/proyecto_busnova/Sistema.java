@@ -32,7 +32,10 @@ import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.CARGA;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.EJECUTIVO;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.REGULAR;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.VIP;
+<<<<<<< HEAD
 import javax.swing.JOptionPane;
+=======
+>>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
 
 public class Sistema {
 
@@ -514,4 +517,12 @@ public class Sistema {
         }
     }
     
+<<<<<<< HEAD
+=======
+    
+    
+    
+    
+    
+>>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
 }

@@ -121,4 +121,55 @@ public class Cola {
         }
         System.out.println();
     }
+    
+    
+    /**
+     * Devuelve el tamaño actual de la cola.
+     *
+     * @return número de elementos en la cola
+     */
+    public int getTamaño() {
+        int contador = 0;
+        Nodo actual = frente;
+        while (actual != null) {
+            contador++;
+            actual = actual.getSiguiente();
+        }
+        return contador;
+    }
+
+    /**
+     * Devuelve el tiquete al frente sin removerlo.
+     *
+     * @return tiquete en el frente o null si la cola está vacía
+     */
+    public Tiquete peekTiquete() {
+        if (frente == null) {
+            return null;
+        }
+        return (Tiquete) frente.getDato();
+    }
+
+    /**
+     * Desencola y retorna el tiquete del frente.
+     *
+     * @return tiquete desencolado
+     * @throws Exception si la cola está vacía
+     */
+    public Tiquete desencolarTiquete() throws Exception {
+        Object obj = desencolar();
+        return (Tiquete) obj;
+    }
+
+    /**
+     * Encola un tiquete en la cola.
+     *
+     * @param t tiquete a encolar
+     */
+    public void encolarTiquete(Tiquete t) {
+        encolar(t);
+    }
+    
+    
+    
 }
