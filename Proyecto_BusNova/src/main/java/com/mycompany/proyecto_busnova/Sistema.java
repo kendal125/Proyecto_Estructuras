@@ -32,10 +32,8 @@ import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.CARGA;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.EJECUTIVO;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.REGULAR;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.VIP;
-<<<<<<< HEAD
 import javax.swing.JOptionPane;
-=======
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
+
 
 public class Sistema {
 
@@ -138,37 +136,37 @@ public class Sistema {
      * @param pass contraseña del usuario
      */
     //metodo
-    public void crearTiquete(Tiquete t, int busId) {
+    public void crearTiquete(Tiquete ticket, int busId) {
         Bus bus = buscarBus(busId);
         if (bus == null) {
             System.out.println("Bus no encontrado");
             return;
         }
-        t.setBusAsignadoId(busId);
-        t.setEstado(Tiquete.Estado.PENDIENTE);
+        ticket.setBusAsignadoId(busId);
+        ticket.setEstado(Tiquete.Estado.PENDIENTE);
 
         // si inspector libre y sin fila - atención inmediata
         if (!bus.isInspectorOcupado() && bus.getCola().estaVacia()) {
-            atenderTiquete(bus, t);
+            atenderTiquete(bus, ticket);
         } else {
-            bus.getCola().encolar(t);
+            bus.getCola().encolar(ticket);
             System.out.println("Tiquete en cola");
         }
     }
 
     //metodo
-    public void atenderTiquete(Bus bus, Tiquete t) {
+    public void atenderTiquete(Bus bus, Tiquete ticket) {
         bus.setInspectorOcupado(true);
-        t.setEstado(Tiquete.Estado.EN_ATENCION);
-        double precio = calcularPrecio(t);
-        t.setPrecioCalculado(precio);
+        ticket.setEstado(Tiquete.Estado.EN_ATENCION);
+        double precio = calcularPrecio(ticket);
+        ticket.setPrecioCalculado(precio);
         // aquí podra validar pago extra
-        t.setEstado(Tiquete.Estado.ATENDIDO);
-        t.setHoraAtencion(new java.util.Date());
-        guardarAtendido(t);
+        ticket.setEstado(Tiquete.Estado.ATENDIDO);
+        ticket.setHoraAtencion(new java.util.Date());
+        guardarAtendido(ticket);
         bus.setInspectorOcupado(false);
 
-        System.out.println("Tiquete atendido: " + t.getId());
+        System.out.println("Tiquete atendido: " + ticket.getId());
     }
 
     //metodo
@@ -191,18 +189,18 @@ public class Sistema {
         }
 
         try {
-            Tiquete t = (Tiquete) bus.getCola().desencolar();
-            atenderTiquete(bus, t);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            Tiquete ticket = (Tiquete) bus.getCola().desencolar();
+            atenderTiquete(bus, ticket);
+        } catch (Exception excep) {
+            System.out.println("Error: " + excep.getMessage());
         }
     }
 
     // Método para asignar un tiquete al bus correcto según tipo de servicio
-    public void asignarTicketABus(Tiquete t) {
+    public void asignarTicketABus(Tiquete ticket) {
         Bus busAsignado = null;
 
-        switch (t.getTipoServicio()) {
+        switch (ticket.getTipoServicio()) {
             case VIP:
                 busAsignado = buscarBusPorTipo('P');
                 break;
@@ -216,9 +214,9 @@ public class Sistema {
         }
 
         if (busAsignado != null) {
-            busAsignado.getCola().encolar(t);
-            t.setEstado(Tiquete.Estado.PENDIENTE);
-            t.setBusAsignadoId(busAsignado.getId());
+            busAsignado.getCola().encolar(ticket);
+            ticket.setEstado(Tiquete.Estado.PENDIENTE);
+            ticket.setBusAsignadoId(busAsignado.getId());
             JOptionPane.showMessageDialog(null, "Tiquete asignado al bus ID: " + busAsignado.getId());
         } else {
             JOptionPane.showMessageDialog(null, "No se encontró un bus disponible para este tiquete.");
@@ -247,17 +245,17 @@ public class Sistema {
         }
 
         try {
-            Tiquete t = (Tiquete) bus.getCola().desencolar();
-            t.setEstado(Tiquete.Estado.EN_ATENCION);
-            t.setHoraAtencion(new java.util.Date());
-            t.setPrecioCalculado(calcularPrecio(t));
+            Tiquete ticket = (Tiquete) bus.getCola().desencolar();
+            ticket.setEstado(Tiquete.Estado.EN_ATENCION);
+            ticket.setHoraAtencion(new java.util.Date());
+            ticket.setPrecioCalculado(calcularPrecio(ticket));
 
             // Guardar como atendido
-            guardarAtendido(t);
+            guardarAtendido(ticket);
 
-            JOptionPane.showMessageDialog(null, "Tiquete atendido ID: " + t.getId()
-                    + "\nPrecio: $" + t.getPrecioCalculado());
-        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Tiquete atendido ID: " + ticket.getId()
+                    + "\nPrecio: $" + ticket.getPrecioCalculado());
+        } catch (Exception excep) {
             JOptionPane.showMessageDialog(null, "No hay tiquetes pendientes en el bus.");
         }
     }
@@ -408,7 +406,7 @@ public class Sistema {
             
             System.out.println("Usuarios cargados: " + config.usuarios.length);
 
-        } catch (Exception e) {
+        } catch (Exception excep) {
             System.err.println("Error al leer Json");
         }
     }
@@ -448,20 +446,20 @@ public class Sistema {
 
            System.out.println("Archivo config.json generado correctamente");
 
-        } catch (Exception e) {
-           System.err.println("Error al escribir Json: " + e.getMessage());
+        } catch (Exception excep) {
+           System.err.println("Error al escribir Json: " + excep.getMessage());
         }
     }
     
      /**
  * Calcula el precio del tiquete según las reglas de servicio.
      *
-     * @param t tiquete a calcular
+     * @param ticket tiquete a calcular
      * @return precio calculado
      */
-    public double calcularPrecio(Tiquete t) {
+    public double calcularPrecio(Tiquete ticket) {
         double precio = 0.0;
-        switch (t.getTipoServicio()) {
+        switch (ticket.getTipoServicio()) {
             case VIP:
                 precio = 20 + 100;
                 break;
@@ -469,7 +467,7 @@ public class Sistema {
                 precio = 20;
                 break;
             case CARGA:
-                precio = 20 + (10 * t.getPesoCarga());
+                precio = 20 + (10 * ticket.getPesoCarga());
                 break;
             case EJECUTIVO:
                 precio = 20 + 1000;
@@ -512,17 +510,10 @@ public class Sistema {
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, nuevo);
 
             System.out.println("Tiquete guardado en atendidos.json: " + t.getId());
-        } catch (Exception e) {
-            System.err.println("Error guardando atendido: " + e.getMessage());
+        } catch (Exception excep) {
+            System.err.println("Error guardando atendido: " + excep.getMessage());
         }
     }
     
-<<<<<<< HEAD
-=======
-    
-    
-    
-    
-    
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
+
 }

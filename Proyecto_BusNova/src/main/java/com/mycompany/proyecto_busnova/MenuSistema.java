@@ -308,10 +308,10 @@ public class MenuSistema {
             peso = Double.parseDouble(JOptionPane.showInputDialog("Ingrese peso de carga:"));
         }
 
-        Tiquete t = new Tiquete(id, tipo, peso, new java.util.Date(),
+        Tiquete ticket = new Tiquete(id, tipo, peso, new java.util.Date(),
                 null, Tiquete.Estado.PENDIENTE, -1, sistema.getNombreTerminal(), 0);
 
-        sistema.asignarTicketABus(t);
+        sistema.asignarTicketABus(ticket);
     }
 
 // Menú para abordar/atender tiquete

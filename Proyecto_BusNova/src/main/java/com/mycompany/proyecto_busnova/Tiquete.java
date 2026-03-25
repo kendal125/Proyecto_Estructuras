@@ -4,13 +4,13 @@
  */
 package com.mycompany.proyecto_busnova;
 
-<<<<<<< HEAD
+
 /**
  *
  * @author lopez
  */
-=======
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
+
+
 import java.util.Date;
 
 /**
@@ -48,13 +48,11 @@ public class Tiquete {
      * @param terminalOrigen terminal donde se compró el tiquete
      */
 
-<<<<<<< HEAD
+
     
     public Tiquete() {
     }
 
-=======
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
     public Tiquete(String id, TipoServicio tipoServicio, double pesoCarga, Date horaCreacion, Date horaAtencion, Estado estado, int busAsignadoId, String terminalOrigen, double precioCalculado) {
         this.id = id;
         this.tipoServicio = tipoServicio;
@@ -167,11 +165,7 @@ public class Tiquete {
     public void setPrecioCalculado(double precioCalculado) {
         this.precioCalculado = precioCalculado;
     }
+}
 
     
     
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
