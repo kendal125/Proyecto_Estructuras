@@ -4,13 +4,10 @@
  */
 package com.mycompany.proyecto_busnova;
 
-<<<<<<< HEAD
 /**
  *
  * @author lopez
  */
-=======
->>>>>>> 5a672067987d1d77d0f48d7c06bcf5adc569674e
 import java.util.Date;
 
 /**
