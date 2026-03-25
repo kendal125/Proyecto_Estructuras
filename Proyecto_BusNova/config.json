@@ -1,7 +1,16 @@
 {
-  "terminal" : "terminal heredia",
+  "terminal" : "santiago",
   "cantidadBuses" : 5,
   "usuarios" : [ {
+    "username" : "admin",
+    "password" : "admin"
+  }, {
+    "username" : "admin",
+    "password" : "admin"
+  }, {
+    "username" : "admin",
+    "password" : "admin"
+  }, {
     "username" : "Juan",
     "password" : "1234"
   }, {
