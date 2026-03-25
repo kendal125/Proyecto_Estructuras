@@ -316,8 +316,16 @@ public class MenuSistema {
 
 // Menú para abordar/atender tiquete
     public static void mostrarMenuAbordarTiquete(Sistema sistema) {
-        int busId = Integer.parseInt(JOptionPane.showInputDialog("Ingrese ID del bus para atender tiquete:"));
-        sistema.atenderTiquete(busId);
+        try {
+            int busId = Integer.parseInt(
+                    JOptionPane.showInputDialog("Ingrese ID del bus para abordar el siguiente tiquete:")
+            );
+
+            sistema.abordar(busId);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Entrada inválida.");
+        }
     }
 
 // Menú para mostrar colas de todos los buses

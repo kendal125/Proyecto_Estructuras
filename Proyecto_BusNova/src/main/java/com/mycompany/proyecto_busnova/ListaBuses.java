@@ -80,6 +80,7 @@ public class ListaBuses {
         }
 
         cantidad++;
+        
     }
 
     /**
