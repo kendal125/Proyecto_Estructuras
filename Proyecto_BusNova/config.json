@@ -1,6 +1,6 @@
 {
   "terminal" : "terminal heredia",
-  "cantidadBuses" : 5,
+  "cantidadBuses" : 8,
   "usuarios" : [ {
     "username" : "Juan",
     "password" : "1234"
@@ -10,5 +10,8 @@
   }, {
     "username" : "Steven",
     "password" : "4321"
+  }, {
+    "username" : "kendall",
+    "password" : "1234"
   } ]
 }

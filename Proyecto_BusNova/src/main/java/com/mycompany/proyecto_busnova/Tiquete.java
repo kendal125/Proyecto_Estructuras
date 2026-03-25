@@ -4,10 +4,6 @@
  */
 package com.mycompany.proyecto_busnova;
 
-/**
- *
- * @author lopez
- */
 import java.util.Date;
 
 /**
@@ -44,11 +40,6 @@ public class Tiquete {
      * @param pesoCarga peso de la carga (si aplica)
      * @param terminalOrigen terminal donde se compró el tiquete
      */
-
-    
-    public Tiquete() {
-    }
-     
     public Tiquete(String id, TipoServicio tipoServicio, double pesoCarga, Date horaCreacion, Date horaAtencion, Estado estado, int busAsignadoId, String terminalOrigen, double precioCalculado) {
         this.id = id;
         this.tipoServicio = tipoServicio;
@@ -61,6 +52,8 @@ public class Tiquete {
         this.precioCalculado = 0.0;
     }
 
+    public Tiquete() {
+    }
     
     // Getters y setters documentados
     
@@ -162,8 +155,4 @@ public class Tiquete {
         this.precioCalculado = precioCalculado;
     }
 
-    
-    
 }
-}
-

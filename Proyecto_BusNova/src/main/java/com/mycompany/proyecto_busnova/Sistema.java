@@ -26,15 +26,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
+/*
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.CARGA;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.EJECUTIVO;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.REGULAR;
 import static com.mycompany.proyecto_busnova.Tiquete.TipoServicio.VIP;
-
-import javax.swing.JOptionPane;
-
+*/
 
 public class Sistema {
 
@@ -52,6 +53,11 @@ public class Sistema {
      * Lista de usuarios del sistema.
      */
     private ListaUsuarios listaUsuarios;
+    
+    /**
+     * Lista de ticketes del sistema
+     */
+    private ListaTiquetes listaTiquetes;
 
     /**
      * Constructor de la clase Sistema.
@@ -64,13 +70,16 @@ public class Sistema {
     public Sistema() {
         listaBuses = new ListaBuses();
         listaUsuarios = new ListaUsuarios();
-        
-        if (!listaUsuarios.validarLogin("admin", "admin")) {
-            listaUsuarios.agregarUsuario(new Usuario("admin", "admin"));
-        }
+        listaTiquetes = new ListaTiquetes();
 
         if (existeConfig()) {
             cargarConfig();
+            cargarTiquetes();
+            cargarColas();
+            
+        } else {
+            listaUsuarios.agregarUsuario(new Usuario("admin", "admin"));
+            guardarConfiguracion();
         }
     }
     
@@ -137,22 +146,27 @@ public class Sistema {
      * @param pass contraseña del usuario
      */
     //metodo
-    public void crearTiquete(Tiquete t, int busId) {
+    public void crearTiquete(Tiquete tiquete, int busId) {
         Bus bus = buscarBus(busId);
         if (bus == null) {
             System.out.println("Bus no encontrado");
             return;
         }
-        t.setBusAsignadoId(busId);
-        t.setEstado(Tiquete.Estado.PENDIENTE);
+        
+        listaTiquetes.agregarTiquete(tiquete);
+        tiquete.setBusAsignadoId(busId);
+        tiquete.setEstado(Tiquete.Estado.PENDIENTE);
 
         // si inspector libre y sin fila - atención inmediata
         if (!bus.isInspectorOcupado() && bus.getCola().estaVacia()) {
-            atenderTiquete(bus, t);
+            atenderTiquete(bus, tiquete);
         } else {
-            bus.getCola().encolar(t);
+            bus.getCola().encolar(tiquete);
             System.out.println("Tiquete en cola");
         }
+        
+        guardarTiquetes();
+        guardarColas();
     }
 
     //metodo
@@ -160,6 +174,7 @@ public class Sistema {
         bus.setInspectorOcupado(true);
         t.setEstado(Tiquete.Estado.EN_ATENCION);
         double precio = calcularPrecio(t);
+        
         t.setPrecioCalculado(precio);
         // aquí podra validar pago extra
         t.setEstado(Tiquete.Estado.ATENDIDO);
@@ -190,18 +205,20 @@ public class Sistema {
         }
 
         try {
-            Tiquete t = (Tiquete) bus.getCola().desencolar();
-            atenderTiquete(bus, t);
+            Tiquete tiquete = (Tiquete) bus.getCola().desencolar();
+            atenderTiquete(bus, tiquete);
+            guardarTiquetes();
+            guardarColas();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
     // Método para asignar un tiquete al bus correcto según tipo de servicio
-    public void asignarTicketABus(Tiquete t) {
+    public void asignarTicketABus(Tiquete tiquete) {
         Bus busAsignado = null;
 
-        switch (t.getTipoServicio()) {
+        switch (tiquete.getTipoServicio()) {
             case VIP:
                 busAsignado = buscarBusPorTipo('P');
                 break;
@@ -215,9 +232,14 @@ public class Sistema {
         }
 
         if (busAsignado != null) {
-            busAsignado.getCola().encolar(t);
-            t.setEstado(Tiquete.Estado.PENDIENTE);
-            t.setBusAsignadoId(busAsignado.getId());
+            
+            listaTiquetes.agregarTiquete(tiquete);
+            busAsignado.getCola().encolar(tiquete);
+            tiquete.setEstado(Tiquete.Estado.PENDIENTE);
+            tiquete.setBusAsignadoId(busAsignado.getId());
+            
+            guardarTiquetes();
+            guardarColas();
             JOptionPane.showMessageDialog(null, "Tiquete asignado al bus ID: " + busAsignado.getId());
         } else {
             JOptionPane.showMessageDialog(null, "No se encontró un bus disponible para este tiquete.");
@@ -237,6 +259,7 @@ public class Sistema {
         return null;
     }
 
+    /*
 // Atender tiquete del bus (desencolar)
     public void atenderTiquete(int busId) {
         Bus bus = buscarBus(busId);
@@ -260,7 +283,7 @@ public class Sistema {
             JOptionPane.showMessageDialog(null, "No hay tiquetes pendientes en el bus.");
         }
     }
-
+*/
 // Mostrar todas las colas de todos los buses
     public String mostrarColas() {
         StringBuilder sb = new StringBuilder();
@@ -299,6 +322,7 @@ public class Sistema {
      */
     public void agregarUsuario(String user, String pass) {
         listaUsuarios.agregarUsuario(new Usuario(user, pass));
+        guardarConfiguracion();
     }
 
     /**
@@ -342,7 +366,7 @@ public class Sistema {
             Bus busNuevo = new Bus(idInicial + i, 'N');
             listaBuses.agregarBus(busNuevo);
         }
-
+        guardarConfiguracion();
     }
 
     /**
@@ -487,7 +511,7 @@ public class Sistema {
      *
      * @param t tiquete marcado como ATENDIDO
      */
-    public void guardarAtendido(Tiquete t) {
+    public void guardarAtendido(Tiquete tiquete) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             File file = new File("atendidos.json");
@@ -505,21 +529,134 @@ public class Sistema {
             for (int i = 0; i < existentes.length; i++) {
                 nuevo[i] = existentes[i];
             }
-            nuevo[existentes.length] = t;
+            nuevo[existentes.length] = tiquete;
 
             // sobrescribir archivo con arreglo actualizado
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, nuevo);
 
-            System.out.println("Tiquete guardado en atendidos.json: " + t.getId());
+            System.out.println("Tiquete guardado en atendidos.json: " + tiquete.getId());
         } catch (Exception e) {
             System.err.println("Error guardando atendido: " + e.getMessage());
         }
     }
+    
+    public void guardarTiquetes() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
 
+            List<Tiquete> lista = new ArrayList<>();
+            Nodo actual = listaTiquetes.getCabeza();
 
-    
-    
-    
-    
+            while (actual != null) {
+                lista.add((Tiquete) actual.getDato());
+                actual = actual.getSiguiente();
+            }
 
+            mapper.writerWithDefaultPrettyPrinter()
+                  .writeValue(new File("tiquetes.json"), lista);
+
+        } catch (Exception e) {
+            System.out.println("Error al guardar tiquetes");
+        }
+    }
+    
+    public void cargarTiquetes() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            File file = new File("tiquetes.json");
+            if (!file.exists()) return;
+
+            Tiquete[] tiquetes = mapper.readValue(file, Tiquete[].class);
+
+            for (Tiquete t : tiquetes) {
+                listaTiquetes.agregarTiquete(t);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar tiquetes");
+        }
+    }
+    
+    
+    public Tiquete[] cargarAtendidos() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            File file = new File("atendidos.json");
+            if (!file.exists()) {
+                return new Tiquete[0];
+            }
+
+            Tiquete[] atendidos = mapper.readValue(file, Tiquete[].class);
+            return atendidos;
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar atendidos");
+            return new Tiquete[0];
+        }
+    }
+    
+    public void guardarColas() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<List<Tiquete>> colas = new ArrayList<>();
+
+            Nodo actualBus = listaBuses.getPrimero();
+
+            while (actualBus != null) {
+                Bus bus = (Bus) actualBus.getDato();
+
+                List<Tiquete> colaBus = new ArrayList<>();
+                Nodo actualCola = bus.getCola().frente;
+
+                while (actualCola != null) {
+                    colaBus.add((Tiquete) actualCola.getDato());
+                    actualCola = actualCola.getSiguiente();
+                }
+
+                colas.add(colaBus);
+                actualBus = actualBus.getSiguiente();
+            }
+
+            mapper.writerWithDefaultPrettyPrinter()
+                  .writeValue(new File("colas.json"), colas);
+
+        } catch (Exception e) {
+            System.out.println("Error al guardar colas");
+        }
+    }
+    
+    public void cargarColas() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            File file = new File("colas.json");
+            if (!file.exists()) return;
+
+            List<List<Tiquete>> colas = mapper.readValue(
+                    file,
+                    new com.fasterxml.jackson.core.type.TypeReference<List<List<Tiquete>>>() {}
+            );
+
+            Nodo actualBus = listaBuses.getPrimero();
+            int i = 0;
+
+            while (actualBus != null && i < colas.size()) {
+                Bus bus = (Bus) actualBus.getDato();
+
+                for (Tiquete t : colas.get(i)) {
+                    bus.getCola().encolarTiquete(t);
+                }
+
+                actualBus = actualBus.getSiguiente();
+                i++;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar colas");
+        }
+    }
+    
 }

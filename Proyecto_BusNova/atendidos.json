@@ -28,4 +28,14 @@
   "busAsignadoId" : 2,
   "terminalOrigen" : "terminal heredia",
   "precioCalculado" : 20.0
+}, {
+  "id" : "01",
+  "tipoServicio" : "VIP",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1774416119472,
+  "horaAtencion" : 1774416119473,
+  "estado" : "ATENDIDO",
+  "busAsignadoId" : 1,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 120.0
 } ]
