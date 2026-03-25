@@ -77,9 +77,11 @@ public class Sistema {
             cargarTiquetes();
             cargarColas();
             
-        } else {
-            listaUsuarios.agregarUsuario(new Usuario("admin", "admin"));
-            guardarConfiguracion();
+        } 
+        
+        if (!listaUsuarios.existeUsuario("admin")) {
+        listaUsuarios.agregarUsuario(new Usuario("admin", "admin"));
+        guardarConfiguracion();
         }
     }
     
