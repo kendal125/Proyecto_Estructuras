@@ -128,15 +128,21 @@ public class Proyecto_BusNova {
                     break;
                     
                 case 7:
+                    JOptionPane.showMessageDialog(null, "Opcion en desarrollo");
                     break;
                     
                 case 8:
+                    JOptionPane.showMessageDialog(null, "Opcion en desarrollo");
                     break;
                     
                 case 9:
+                    JOptionPane.showMessageDialog(null, sistema.mostrarTiquetes());
                     break;
-                    
+
                 case 10:
+                    sistema.guardarConfiguracion();
+                    sistema.guardarTiquetes();
+                    sistema.guardarColas();
                     JOptionPane.showMessageDialog(null, "Saliendo...");
                     break;
                     

@@ -256,29 +256,46 @@ public class MenuSistema {
 
     private static void crearTiqueteUI(Sistema sistema) {
         String id = JOptionPane.showInputDialog("ID:");
-
-        String tipoStr = JOptionPane.showInputDialog("Tipo: VIP, REGULAR, CARGA, EJECUTIVO");
-
-        double peso = 0;
-        if (tipoStr.equals("CARGA")) {
-            peso = Double.parseDouble(JOptionPane.showInputDialog("Peso:"));
+        if (id == null || id.trim().isEmpty()) {
+            return;
         }
 
-        int busId = Integer.parseInt(JOptionPane.showInputDialog("Bus ID:"));
+        String[] opciones = {"VIP", "REGULAR", "CARGA", "EJECUTIVO"};
+        String tipoStr = (String) JOptionPane.showInputDialog(
+                null,"Seleccione tipo de servicio:","Tipo de servicio",JOptionPane.QUESTION_MESSAGE,null,
+                opciones,opciones[0]);
+
+        if (tipoStr == null) {
+            return;
+        }
+
+        Tiquete.TipoServicio tipo = Tiquete.TipoServicio.valueOf(tipoStr);
+
+        double peso = 0;
+        if (tipo == Tiquete.TipoServicio.CARGA) {
+            try {
+                peso = Double.parseDouble(
+                        JOptionPane.showInputDialog("Ingrese peso de carga:")
+                );
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Peso inválido");
+                return;
+            }
+        }
 
         Tiquete t = new Tiquete(
                 id,
-                Tiquete.TipoServicio.valueOf(tipoStr),
+                tipo,
                 peso,
                 new java.util.Date(),
                 null,
                 Tiquete.Estado.PENDIENTE,
-                busId,
+                -1, // se asigna automáticamente
                 sistema.getNombreTerminal(),
                 0
         );
 
-        sistema.crearTiquete(t, busId);
+        sistema.asignarTicketABus(t);
     }
 
     private static void abordarUI(Sistema sistema) {
@@ -316,8 +333,16 @@ public class MenuSistema {
 
 // Menú para abordar/atender tiquete
     public static void mostrarMenuAbordarTiquete(Sistema sistema) {
-        int busId = Integer.parseInt(JOptionPane.showInputDialog("Ingrese ID del bus para atender tiquete:"));
-        sistema.atenderTiquete(busId);
+        try {
+            int busId = Integer.parseInt(
+                    JOptionPane.showInputDialog("Ingrese ID del bus para abordar el siguiente tiquete:")
+            );
+
+            sistema.abordar(busId);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Entrada inválida.");
+        }
     }
 
 // Menú para mostrar colas de todos los buses

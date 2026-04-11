@@ -1,0 +1,51 @@
+[ [ ], [ ], [ {
+  "id" : "1",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1775585748289,
+  "horaAtencion" : null,
+  "estado" : "PENDIENTE",
+  "busAsignadoId" : 3,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 0.0
+} ], [ {
+  "id" : "2",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1775585759606,
+  "horaAtencion" : null,
+  "estado" : "EN_ATENCION",
+  "busAsignadoId" : 4,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0
+} ], [ {
+  "id" : "3",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1775585771382,
+  "horaAtencion" : null,
+  "estado" : "EN_ATENCION",
+  "busAsignadoId" : 5,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0
+} ], [ {
+  "id" : "2",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1775585871639,
+  "horaAtencion" : null,
+  "estado" : "EN_ATENCION",
+  "busAsignadoId" : 6,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0
+} ], [ {
+  "id" : "7",
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1775586392234,
+  "horaAtencion" : null,
+  "estado" : "EN_ATENCION",
+  "busAsignadoId" : 7,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0
+} ], [ ] ]
