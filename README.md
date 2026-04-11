@@ -90,3 +90,179 @@ Guarda el username y password como cadenas de texto privadas.
 Proporciona métodos para obtener el nombre de usuario y la contraseña (getUsername(), getPassword()).
 Se utiliza para autenticar y manejar usuarios en el sistema.
 Es un objeto simple que encapsula los datos de acceso sin lógica adicional.
+
+--
+
+# Guía de Uso – BusNova
+
+## Descripción
+BusNova es un sistema en Java con interfaz `JOptionPane` para administrar una terminal de buses.  
+Permite configurar la terminal, administrar buses y usuarios, gestionar tiquetes y controlar colas con persistencia en archivos JSON.
+
+---
+
+## Archivos Utilizados
+- `config.json`: Configuración general del sistema  
+- `tiquetes.json`: Tiquetes registrados  
+- `colas.json`: Colas pendientes de cada bus  
+- `atendidos.json`: Historial de tiquetes atendidos  
+
+---
+
+## Inicio del Sistema
+
+### Si existe `config.json`
+El sistema carga automáticamente:
+- Configuración
+- Tiquetes
+- Colas
+
+### Si no existe `config.json`
+Solicita configuración inicial:
+1. Nombre de la terminal  
+2. Cantidad de buses (mínimo 2)  
+3. Registro de usuarios  
+
+**Reglas de creación de buses:**
+- Bus 1 = Preferencial  
+- Bus 2 = Directo  
+- Restantes = Normales  
+
+Si no se registra ningún usuario válido:
+- Se crea automáticamente `admin / admin`
+
+---
+
+## Login
+El sistema solicita:
+- Usuario  
+- Contraseña  
+
+**Reglas:**
+- Máximo 3 intentos  
+- Si falla o se cancela, el sistema finaliza  
+
+---
+
+## Menú Principal
+
+1. Configuración del sistema  
+2. Administrar buses  
+3. Administrar usuarios  
+4. Gestión de tiquetes  
+5. Atención de tiquetes  
+6. Consulta de colas  
+7. Rutas y grafo  
+8. Consulta BCCR  
+9. Reportes  
+10. Salir  
+
+---
+
+## Configuración del Sistema
+Permite:
+- Ver configuración actual  
+- Cambiar nombre de terminal  
+- Guardar configuración  
+
+---
+
+## Administrar Buses
+Permite:
+- Ver buses registrados  
+- Agregar buses normales  
+- Ver cantidad total de buses  
+
+---
+
+## Administrar Usuarios
+Permite:
+- Ver usuarios registrados  
+- Agregar usuarios nuevos  
+
+**Validación:**  
+No permite usernames duplicados.
+
+---
+
+## Gestión de Tiquetes
+
+### Crear Tiquete
+Solicita:
+- ID  
+- Tipo de servicio (`VIP`, `REGULAR`, `CARGA`, `EJECUTIVO`)  
+
+Si es `CARGA`:
+- Solicita peso de carga  
+
+### Asignación Automática
+- `VIP` → Bus Preferencial  
+- `CARGA` → Bus Directo  
+- `REGULAR / EJECUTIVO` → Bus Normal con menor cola  
+
+---
+
+## Atención de Tiquetes
+
+### Abordar Tiquete
+Solicita:
+- ID del bus  
+
+**Proceso:**
+1. Toma el primer tiquete de la cola  
+2. Calcula precio según servicio  
+3. Solicita confirmación de pago  
+
+### Si paga
+- Cambia estado a `ATENDIDO`  
+- Guarda en `atendidos.json`  
+
+### Si no paga
+- Cambia estado a `RECHAZADO`  
+- Se elimina de la cola  
+
+---
+
+## Consulta de Colas
+Muestra:
+- Todos los buses  
+- Tipo de bus  
+- IDs de tiquetes en espera  
+
+---
+
+## Reportes
+Muestra la lista completa de tiquetes registrados con:
+- ID  
+- Bus asignado  
+- Tipo  
+- Estado  
+- Hora de creación  
+- Hora de atención  
+
+---
+
+## Opciones en Desarrollo
+Actualmente no implementadas:
+- Rutas y grafo  
+- Consulta BCCR  
+
+---
+
+## Salida del Sistema
+Al salir se guardan automáticamente:
+- Configuración  
+- Tiquetes  
+- Colas  
+
+---
+
+## Flujo Recomendado de Uso
+1. Configurar sistema  
+2. Iniciar sesión  
+3. Administrar buses/usuarios si es necesario  
+4. Crear tiquetes  
+5. Consultar colas  
+6. Atender tiquetes  
+7. Revisar reportes  
+8. Salir para guardar cambios  
