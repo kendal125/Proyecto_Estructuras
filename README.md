@@ -17,6 +17,51 @@ Este módulo cumple con la finalidad de configurar el programa. 	1.	Utilizará c
 6.	Lo anterior debe verse reflejado (serializado) en el archivo config.json . 
 7.	Los usuarios y contraseñas de los usuarios serán almacenados en este archivo. No deben quedar quemados en el código (ideal un usuario por miembro del grupo).  
 
+Módulo 1.2: Atención de tiquetes
+Estructuras de Datos
+
+Este módulo cumple con la atención de tiquetes
+
+La atención de tiquetes se divide en dos funciones:
+
+La primera es al momento de crear un tiquete si se asigna a una cola vacía, inmediatamente este pasará a ser atendido por el inspector del bus, siempre y cuando este esté desocupado (no se encuentra atendiendo un tiquete).
+La segunda función es cuando la fila se encuentra llena, en este escenario, el programa debe contar con una funcionalidad que se “active”, con la cual el tiquete es atendido por el inspector. Una vez atendido debe poderse marcar el tiquete como “Atendido” y dejar libre al inspector para la siguiente persona.
+
+Cada vez que un tiquete pasa a ser atendido debe cambiar la hora de atención por la del sistema y además debe mandarlo a guardar en la base de datos, en este caso un archivo llamado atendidos.json
+
+Se debe guardar en base de datos en cual bus se subió y de cual terminal compró el tiquete.
+
+El sistema debe poder mostrar por pantalla esta información con una opción de menú.
+
+Cada bus tiene un inspector y función permitir la entrada al bus. Si cambia a estado “Atendido” se provoca que subió al bus.
+
+Los tipos de servicio de los tiquetes son al menos:
+
+VIP: paga 100$ adicionales, con derecho a comer y beber.
+Regular: cobra normal de 20$.
+Carga: paga 20$ más 10$ por cada lb de carga.
+Ejecutivo: paga 100$ adicionales, con derecho a manejar el bus.
+
+Los servicios se cobrarán al subir al bus por el inspector, se debe preguntar al usuario, si no paga apagar es sacado de la fila de ese bus y tiene que iniciar el proceso de atención de nuevo.
+
+El cálculo requiere el consumo en línea del web service del Banco Central.
+
+Módulo 1.3: Llenado de las colas
+Estructuras de Datos
+
+Este módulo contempla las técnicas de llenado de las colas de los buses
+
+Los buses se llenarán conforme las personas soliciten tiquetes, además, debe considerar el tamaño actual de la cola para el bus, es decir:
+
+Bus 1 tiene 5 personas en fila
+Bus 5 tiene 3 personas en fila
+Bus 7 tiene 4 personas en fila
+
+En caso de un tiquete normal nuevo, se asignará a la fila del bus 5 porque tiene menos personas en espera a subir, en caso de empate, se puede asignar a cualquiera.
+Cabe resaltar que para los tiquetes de Bus Directo o Bus Preferencial serán asignados conforme se crean ya que estos tiquetes no se atienden por otros buses (solo hay uno directo y uno preferencial).
+
+Lo anterior debe verse reflejado (realizado) en el archivo colas.json, y cargarse cuando inicia el sistema si existen registros pendientes de atender.
+
 Clase Auth
 
 Gestiona la autenticación de usuarios.
