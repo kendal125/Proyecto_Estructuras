@@ -260,6 +260,29 @@ public class Sistema {
         }
         return null;
     }
+    
+    private Bus buscarBusNormalConMenorCola() {
+        Nodo actual = listaBuses.getPrimero();
+        Bus mejorBus = null;
+        int menorCantidad = Integer.MAX_VALUE;
+
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+
+            if (bus.getTipo() == 'N') {
+                int cantidadCola = bus.getCola().getTamaño();
+
+                if (cantidadCola < menorCantidad) {
+                    menorCantidad = cantidadCola;
+                    mejorBus = bus;
+                }
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        return mejorBus;
+    }
 
     /*
 // Atender tiquete del bus (desencolar)
