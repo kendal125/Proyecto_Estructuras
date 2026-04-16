@@ -192,28 +192,13 @@ public class Sistema {
         Bus bus = buscarBus(busId);
 
         if (bus == null) {
-            System.out.println("Bus no encontrado");
+            JOptionPane.showMessageDialog(null, "Bus no encontrado.");
             return;
         }
 
-        if (bus.isInspectorOcupado()) {
-            System.out.println("Inspector ocupado");
-            return;
-        }
+        bus.abordar(this);
 
-        if (bus.getCola().estaVacia()) {
-            System.out.println("No hay personas en fila");
-            return;
-        }
-
-        try {
-            Tiquete tiquete = (Tiquete) bus.getCola().desencolar();
-            atenderTiquete(bus, tiquete);
-            guardarTiquetes();
-            guardarColas();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        guardarEstadoOperativo();
     }
 
     // Método para asignar un tiquete al bus correcto según tipo de servicio
@@ -224,27 +209,33 @@ public class Sistema {
             case VIP:
                 busAsignado = buscarBusPorTipo('P');
                 break;
-            case EJECUTIVO:
-            case REGULAR:
-                busAsignado = buscarBusPorTipo('N');
-                break;
+
             case CARGA:
                 busAsignado = buscarBusPorTipo('D');
+                break;
+
+            case REGULAR:
+            case EJECUTIVO:
+                busAsignado = buscarBusNormalConMenorCola();
                 break;
         }
 
         if (busAsignado != null) {
-            
-            listaTiquetes.agregarTiquete(tiquete);
-            busAsignado.getCola().encolar(tiquete);
-            tiquete.setEstado(Tiquete.Estado.PENDIENTE);
             tiquete.setBusAsignadoId(busAsignado.getId());
-            
+            tiquete.setTipoBus(busAsignado.getTipo());
+            tiquete.setEstado(Tiquete.Estado.PENDIENTE);
+
+            listaTiquetes.agregarTiquete(tiquete);
+            busAsignado.getCola().encolarTiquete(tiquete);
+
             guardarTiquetes();
             guardarColas();
-            JOptionPane.showMessageDialog(null, "Tiquete asignado al bus ID: " + busAsignado.getId());
+
+            JOptionPane.showMessageDialog(null,
+                    "Tiquete asignado al bus ID: " + busAsignado.getId());
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontró un bus disponible para este tiquete.");
+            JOptionPane.showMessageDialog(null,
+                    "No se encontró un bus disponible para este tiquete.");
         }
     }
 
@@ -311,32 +302,35 @@ public class Sistema {
 */
 // Mostrar todas las colas de todos los buses
     public String mostrarColas() {
-        StringBuilder sb = new StringBuilder();
+        String texto = "";
         Nodo actual = listaBuses.getPrimero();
 
         while (actual != null) {
             Bus bus = (Bus) actual.getDato();
-            sb.append("Bus ID: ").append(bus.getId())
-                    .append(" | Tipo: ").append(bus.getTipo())
-                    .append(" | Tiquetes en cola: ");
+
+            texto += "Bus ID: " + bus.getId()
+                  + " | Tipo: " + bus.getTipo()
+                  + " | Inspector: " + (bus.isInspectorOcupado() ? "Ocupado" : "Libre")
+                  + " | Tiquetes en cola: ";
 
             Cola cola = bus.getCola();
-            Nodo nodoCola = cola.frente; // Accede al frente directamente
+            Nodo nodoCola = cola.frente;
 
             if (nodoCola == null) {
-                sb.append("0\n");
+                texto += "0";
             } else {
                 while (nodoCola != null) {
                     Tiquete t = (Tiquete) nodoCola.getDato();
-                    sb.append(t.getId()).append(" ");
+                    texto += t.getId() + "(" + t.getEstado() + ") ";
                     nodoCola = nodoCola.getSiguiente();
                 }
-                sb.append("\n");
             }
+
+            texto += "\n";
             actual = actual.getSiguiente();
         }
 
-        return sb.toString();
+        return texto;
     }
 
     /**
@@ -573,7 +567,12 @@ public class Sistema {
             Nodo actual = listaTiquetes.getCabeza();
 
             while (actual != null) {
-                lista.add((Tiquete) actual.getDato());
+                Tiquete tkt = (Tiquete) actual.getDato();
+
+                if (tkt.getEstado() != Tiquete.Estado.ATENDIDO) {
+                    lista.add(tkt);
+                }
+
                 actual = actual.getSiguiente();
             }
 
@@ -672,9 +671,10 @@ public class Sistema {
                 Bus bus = (Bus) actualBus.getDato();
 
                 for (Tiquete t : colas.get(i)) {
-                    bus.getCola().encolarTiquete(t);
+                    if (t.getEstado() != Tiquete.Estado.ATENDIDO) {
+                        bus.getCola().encolarTiquete(t);
+                    }
                 }
-
                 actualBus = actualBus.getSiguiente();
                 i++;
             }
@@ -682,6 +682,11 @@ public class Sistema {
         } catch (Exception e) {
             System.out.println("Error al cargar colas");
         }
+    }
+    
+    public void guardarEstadoOperativo() {
+        guardarTiquetes();
+        guardarColas();
     }
     
 }
