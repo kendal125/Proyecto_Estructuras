@@ -495,30 +495,49 @@ public class Sistema {
         }
     }
     
-     /**
- * Calcula el precio del tiquete según las reglas de servicio.
-     *
-     * @param t tiquete a calcular
-     * @return precio calculado
-     */
-    public double calcularPrecio(Tiquete t) {
-        double precio = 0.0;
-        switch (t.getTipoServicio()) {
-            case VIP:
-                precio = 20 + 100;
-                break;
-            case REGULAR:
-                precio = 20;
-                break;
-            case CARGA:
-                precio = 20 + (10 * t.getPesoCarga());
-                break;
-            case EJECUTIVO:
-                precio = 20 + 1000;
-                break;
-        }
-        return precio;
+    /**
+ * Calcula el precio del tiquete según el tipo de servicio
+ * y realiza la conversión a colones utilizando el tipo de cambio
+ * del BCCR si el cliente utiliza esa moneda.
+ *
+ * @param t tiquete a calcular
+ * @return precio final del tiquete
+ */
+public double calcularPrecio(Tiquete tkt) {
+    double precio = 0.0;
+
+    // Precio base según servicio
+    switch (tkt.getTipoServicio()) {
+        case VIP:
+            precio = 20 + 100;
+            break;
+        case REGULAR:
+            precio = 20;
+            break;
+        case CARGA:
+            precio = 20 + (10 * tkt.getPesoCarga());
+            break;
+        case EJECUTIVO:
+            precio = 20 + 1000;
+            break;
     }
+
+    // Integracion con BCCR
+    if (tkt.getMonedaCuenta().equalsIgnoreCase("COLONES")) {
+        try {
+            BCCR bccr = new BCCR();
+            double tipoCambio = bccr.obtenerTipoCambioVenta();
+
+            precio = precio * tipoCambio;
+
+        } catch (Exception e) {
+            System.out.println("Error al obtener tipo de cambio: " + e.getMessage());
+        }
+    }
+    precio = Math.round(precio * 100.0) / 100.0;
+
+    return precio;
+}
 
     /**
      * Guarda un tiquete atendido en el archivo atendidos.json.

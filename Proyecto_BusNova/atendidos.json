@@ -1,5 +1,7 @@
 [ {
   "id" : "1",
+  "nombre" : null,
+  "edad" : 0,
   "tipoServicio" : "VIP",
   "pesoCarga" : 0.0,
   "horaCreacion" : 1774323811178,
@@ -7,9 +9,13 @@
   "estado" : "ATENDIDO",
   "busAsignadoId" : 1,
   "terminalOrigen" : "terminal heredia",
-  "precioCalculado" : 120.0
+  "precioCalculado" : 120.0,
+  "monedaCuenta" : null,
+  "tipoBus" : "\u0000"
 }, {
   "id" : "1",
+  "nombre" : null,
+  "edad" : 0,
   "tipoServicio" : "VIP",
   "pesoCarga" : 0.0,
   "horaCreacion" : 1774325393514,
@@ -17,9 +23,13 @@
   "estado" : "ATENDIDO",
   "busAsignadoId" : 1,
   "terminalOrigen" : "terminal heredia",
-  "precioCalculado" : 120.0
+  "precioCalculado" : 120.0,
+  "monedaCuenta" : null,
+  "tipoBus" : "\u0000"
 }, {
   "id" : "12",
+  "nombre" : null,
+  "edad" : 0,
   "tipoServicio" : "REGULAR",
   "pesoCarga" : 0.0,
   "horaCreacion" : 1774325434066,
@@ -27,9 +37,13 @@
   "estado" : "ATENDIDO",
   "busAsignadoId" : 2,
   "terminalOrigen" : "terminal heredia",
-  "precioCalculado" : 20.0
+  "precioCalculado" : 20.0,
+  "monedaCuenta" : null,
+  "tipoBus" : "\u0000"
 }, {
   "id" : "01",
+  "nombre" : null,
+  "edad" : 0,
   "tipoServicio" : "VIP",
   "pesoCarga" : 0.0,
   "horaCreacion" : 1774416119472,
@@ -37,5 +51,21 @@
   "estado" : "ATENDIDO",
   "busAsignadoId" : 1,
   "terminalOrigen" : "terminal heredia",
-  "precioCalculado" : 120.0
+  "precioCalculado" : 120.0,
+  "monedaCuenta" : null,
+  "tipoBus" : "\u0000"
+}, {
+  "id" : "03",
+  "nombre" : "Alonso",
+  "edad" : 23,
+  "tipoServicio" : "REGULAR",
+  "pesoCarga" : 0.0,
+  "horaCreacion" : 1776575669432,
+  "horaAtencion" : 1776575693859,
+  "estado" : "ATENDIDO",
+  "busAsignadoId" : 3,
+  "terminalOrigen" : "terminal heredia",
+  "precioCalculado" : 20.0,
+  "monedaCuenta" : "COLONES",
+  "tipoBus" : "N"
 } ]

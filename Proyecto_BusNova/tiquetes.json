@@ -1,11 +1,15 @@
 [ {
-  "id" : "01",
-  "tipoServicio" : "VIP",
+  "id" : "10",
+  "nombre" : "Juan",
+  "edad" : 20,
+  "tipoServicio" : "EJECUTIVO",
   "pesoCarga" : 0.0,
-  "horaCreacion" : 1774416119472,
-  "horaAtencion" : 1774416119473,
-  "estado" : "ATENDIDO",
-  "busAsignadoId" : 1,
+  "horaCreacion" : 1776575736156,
+  "horaAtencion" : 1776575762015,
+  "estado" : "EN_ATENCION",
+  "busAsignadoId" : 3,
   "terminalOrigen" : "terminal heredia",
-  "precioCalculado" : 120.0
+  "precioCalculado" : 1020.0,
+  "monedaCuenta" : "COLONES",
+  "tipoBus" : "N"
 } ]
