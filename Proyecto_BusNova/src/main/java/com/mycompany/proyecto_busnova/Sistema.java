@@ -192,28 +192,13 @@ public class Sistema {
         Bus bus = buscarBus(busId);
 
         if (bus == null) {
-            System.out.println("Bus no encontrado");
+            JOptionPane.showMessageDialog(null, "Bus no encontrado.");
             return;
         }
 
-        if (bus.isInspectorOcupado()) {
-            System.out.println("Inspector ocupado");
-            return;
-        }
+        bus.abordar(this);
 
-        if (bus.getCola().estaVacia()) {
-            System.out.println("No hay personas en fila");
-            return;
-        }
-
-        try {
-            Tiquete tiquete = (Tiquete) bus.getCola().desencolar();
-            atenderTiquete(bus, tiquete);
-            guardarTiquetes();
-            guardarColas();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        guardarEstadoOperativo();
     }
 
     // Método para asignar un tiquete al bus correcto según tipo de servicio
@@ -224,27 +209,33 @@ public class Sistema {
             case VIP:
                 busAsignado = buscarBusPorTipo('P');
                 break;
-            case EJECUTIVO:
-            case REGULAR:
-                busAsignado = buscarBusPorTipo('N');
-                break;
+
             case CARGA:
                 busAsignado = buscarBusPorTipo('D');
+                break;
+
+            case REGULAR:
+            case EJECUTIVO:
+                busAsignado = buscarBusNormalConMenorCola();
                 break;
         }
 
         if (busAsignado != null) {
-            
-            listaTiquetes.agregarTiquete(tiquete);
-            busAsignado.getCola().encolar(tiquete);
-            tiquete.setEstado(Tiquete.Estado.PENDIENTE);
             tiquete.setBusAsignadoId(busAsignado.getId());
-            
+            tiquete.setTipoBus(busAsignado.getTipo());
+            tiquete.setEstado(Tiquete.Estado.PENDIENTE);
+
+            listaTiquetes.agregarTiquete(tiquete);
+            busAsignado.getCola().encolarTiquete(tiquete);
+
             guardarTiquetes();
             guardarColas();
-            JOptionPane.showMessageDialog(null, "Tiquete asignado al bus ID: " + busAsignado.getId());
+
+            JOptionPane.showMessageDialog(null,
+                    "Tiquete asignado al bus ID: " + busAsignado.getId());
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontró un bus disponible para este tiquete.");
+            JOptionPane.showMessageDialog(null,
+                    "No se encontró un bus disponible para este tiquete.");
         }
     }
 
@@ -259,6 +250,29 @@ public class Sistema {
             actual = actual.getSiguiente();
         }
         return null;
+    }
+    
+    private Bus buscarBusNormalConMenorCola() {
+        Nodo actual = listaBuses.getPrimero();
+        Bus mejorBus = null;
+        int menorCantidad = Integer.MAX_VALUE;
+
+        while (actual != null) {
+            Bus bus = (Bus) actual.getDato();
+
+            if (bus.getTipo() == 'N') {
+                int cantidadCola = bus.getCola().getTamaño();
+
+                if (cantidadCola < menorCantidad) {
+                    menorCantidad = cantidadCola;
+                    mejorBus = bus;
+                }
+            }
+
+            actual = actual.getSiguiente();
+        }
+
+        return mejorBus;
     }
 
     /*
@@ -288,32 +302,35 @@ public class Sistema {
 */
 // Mostrar todas las colas de todos los buses
     public String mostrarColas() {
-        StringBuilder sb = new StringBuilder();
+        String texto = "";
         Nodo actual = listaBuses.getPrimero();
 
         while (actual != null) {
             Bus bus = (Bus) actual.getDato();
-            sb.append("Bus ID: ").append(bus.getId())
-                    .append(" | Tipo: ").append(bus.getTipo())
-                    .append(" | Tiquetes en cola: ");
+
+            texto += "Bus ID: " + bus.getId()
+                  + " | Tipo: " + bus.getTipo()
+                  + " | Inspector: " + (bus.isInspectorOcupado() ? "Ocupado" : "Libre")
+                  + " | Tiquetes en cola: ";
 
             Cola cola = bus.getCola();
-            Nodo nodoCola = cola.frente; // Accede al frente directamente
+            Nodo nodoCola = cola.frente;
 
             if (nodoCola == null) {
-                sb.append("0\n");
+                texto += "0";
             } else {
                 while (nodoCola != null) {
                     Tiquete t = (Tiquete) nodoCola.getDato();
-                    sb.append(t.getId()).append(" ");
+                    texto += t.getId() + "(" + t.getEstado() + ") ";
                     nodoCola = nodoCola.getSiguiente();
                 }
-                sb.append("\n");
             }
+
+            texto += "\n";
             actual = actual.getSiguiente();
         }
 
-        return sb.toString();
+        return texto;
     }
 
     /**
@@ -478,30 +495,49 @@ public class Sistema {
         }
     }
     
-     /**
- * Calcula el precio del tiquete según las reglas de servicio.
-     *
-     * @param t tiquete a calcular
-     * @return precio calculado
-     */
-    public double calcularPrecio(Tiquete t) {
-        double precio = 0.0;
-        switch (t.getTipoServicio()) {
-            case VIP:
-                precio = 20 + 100;
-                break;
-            case REGULAR:
-                precio = 20;
-                break;
-            case CARGA:
-                precio = 20 + (10 * t.getPesoCarga());
-                break;
-            case EJECUTIVO:
-                precio = 20 + 1000;
-                break;
-        }
-        return precio;
+    /**
+ * Calcula el precio del tiquete según el tipo de servicio
+ * y realiza la conversión a colones utilizando el tipo de cambio
+ * del BCCR si el cliente utiliza esa moneda.
+ *
+ * @param t tiquete a calcular
+ * @return precio final del tiquete
+ */
+public double calcularPrecio(Tiquete tkt) {
+    double precio = 0.0;
+
+    // Precio base según servicio
+    switch (tkt.getTipoServicio()) {
+        case VIP:
+            precio = 20 + 100;
+            break;
+        case REGULAR:
+            precio = 20;
+            break;
+        case CARGA:
+            precio = 20 + (10 * tkt.getPesoCarga());
+            break;
+        case EJECUTIVO:
+            precio = 20 + 1000;
+            break;
     }
+
+    // Integracion con BCCR
+    if (tkt.getMonedaCuenta().equalsIgnoreCase("COLONES")) {
+        try {
+            BCCR bccr = new BCCR();
+            double tipoCambio = bccr.obtenerTipoCambioVenta();
+
+            precio = precio * tipoCambio;
+
+        } catch (Exception e) {
+            System.out.println("Error al obtener tipo de cambio: " + e.getMessage());
+        }
+    }
+    precio = Math.round(precio * 100.0) / 100.0;
+
+    return precio;
+}
 
     /**
      * Guarda un tiquete atendido en el archivo atendidos.json.
@@ -550,7 +586,12 @@ public class Sistema {
             Nodo actual = listaTiquetes.getCabeza();
 
             while (actual != null) {
-                lista.add((Tiquete) actual.getDato());
+                Tiquete tkt = (Tiquete) actual.getDato();
+
+                if (tkt.getEstado() != Tiquete.Estado.ATENDIDO) {
+                    lista.add(tkt);
+                }
+
                 actual = actual.getSiguiente();
             }
 
@@ -649,9 +690,10 @@ public class Sistema {
                 Bus bus = (Bus) actualBus.getDato();
 
                 for (Tiquete t : colas.get(i)) {
-                    bus.getCola().encolarTiquete(t);
+                    if (t.getEstado() != Tiquete.Estado.ATENDIDO) {
+                        bus.getCola().encolarTiquete(t);
+                    }
                 }
-
                 actualBus = actualBus.getSiguiente();
                 i++;
             }
@@ -659,6 +701,11 @@ public class Sistema {
         } catch (Exception e) {
             System.out.println("Error al cargar colas");
         }
+    }
+    
+    public void guardarEstadoOperativo() {
+        guardarTiquetes();
+        guardarColas();
     }
     
 }

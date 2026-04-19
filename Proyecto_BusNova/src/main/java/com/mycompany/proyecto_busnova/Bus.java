@@ -150,10 +150,21 @@ public class Bus {
             this.inspectorOcupado = true;
 
             double precio = sistema.calcularPrecio(t);
+            //Determinar símbolo de moneda
+            String simbolo;
+            if (t.getMonedaCuenta().equalsIgnoreCase("COLONES")) {
+                simbolo = "₡";
+            } else {
+                simbolo = "$";
+            }
+
             t.setPrecioCalculado(precio);
 
-            String mensaje = "Tiquete ID: " + t.getId() + "\nServicio: " + t.getTipoServicio()
-                    + "\nPrecio: " + precio + "\n¿Desea pagar y abordar?";
+            String mensaje = "Tiquete ID: " + t.getId()
+                + "\nServicio: " + t.getTipoServicio()
+                + "\nMonto a pagar: " + simbolo + precio
+                + "\n¿Desea pagar y abordar?";
+            
             int resp = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar pago", JOptionPane.YES_NO_OPTION);
 
             if (resp == JOptionPane.YES_OPTION) {

@@ -7,10 +7,29 @@ package com.mycompany.proyecto_busnova;
 import java.util.Date;
 
 /**
- * Clase que representa un tiquete emitido en la terminal.
+ * Clase que representa un tiquete emitido en la terminal de buses.
+ *
  * <p>
- * Contiene información sobre el tipo de servicio, estado, hora de creación,
- * hora de atención, precio calculado, bus asignado y terminal de origen.
+ * Cada tiquete almacena la información del cliente, el servicio solicitado,
+ * los datos de atención y el estado del proceso dentro del sistema.
+ * </p>
+ *
+ * <p>
+ * La información del tiquete incluye:
+ * <ul>
+ *   <li>Datos personales del cliente (nombre, edad, moneda de cuenta)</li>
+ *   <li>Tipo de servicio solicitado</li>
+ *   <li>Tipo de bus asignado</li>
+ *   <li>Fechas de creación y atención</li>
+ *   <li>Estado actual del tiquete</li>
+ *   <li>Bus asignado y terminal de origen</li>
+ *   <li>Precio calculado al momento de atención</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Esta clase es serializada/deserializada hacia archivos JSON como parte de la
+ * persistencia del sistema.
  * </p>
  */
 
@@ -22,6 +41,8 @@ public class Tiquete {
     public enum Estado { PENDIENTE, EN_ATENCION, ATENDIDO }
 
     private String id;
+    private String nombre;
+    private int edad;
     private TipoServicio tipoServicio;
     private double pesoCarga;
     private Date horaCreacion;
@@ -30,6 +51,8 @@ public class Tiquete {
     private int busAsignadoId;
     private String terminalOrigen;
     private double precioCalculado;
+    private String monedaCuenta;
+    private char tipoBus;
 
     
         /**
@@ -40,18 +63,28 @@ public class Tiquete {
      * @param pesoCarga peso de la carga (si aplica)
      * @param terminalOrigen terminal donde se compró el tiquete
      */
-    public Tiquete(String id, TipoServicio tipoServicio, double pesoCarga, Date horaCreacion, Date horaAtencion, Estado estado, int busAsignadoId, String terminalOrigen, double precioCalculado) {
+    public Tiquete(String id, String nombre, int edad, String monedaCuenta, TipoServicio tipoServicio, double pesoCarga, String terminalOrigen) {
+        this.nombre = nombre;
         this.id = id;
+        this.edad = edad;
+        this.monedaCuenta = monedaCuenta;
+
         this.tipoServicio = tipoServicio;
         this.pesoCarga = pesoCarga;
+
         this.horaCreacion = new Date();
-        this.horaAtencion = horaAtencion;
-        this.estado = estado;
+        this.horaAtencion = null;
+
+        this.estado = Estado.PENDIENTE;
+
         this.busAsignadoId = -1;
+        this.tipoBus = '?'; // temporalhasta asignación real
+
         this.terminalOrigen = terminalOrigen;
         this.precioCalculado = 0.0;
-    }
 
+    }
+    
     public Tiquete() {
     }
     
@@ -154,5 +187,55 @@ public class Tiquete {
     public void setPrecioCalculado(double precioCalculado) {
         this.precioCalculado = precioCalculado;
     }
+    
+    //
+    /** @param nombre nombre usuario */
+    public String getNombre() {
+        return nombre;
+    }
+    
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    /** @param Edad usuario */
+    public int getEdad() {
+        return edad;
+    }
+
+    public void setEdad(int edad) {
+        this.edad = edad;
+    }
+
+    /** @param MonedaCuenta moneda en dolares o colones */
+    public String getMonedaCuenta() {
+        return monedaCuenta;
+    }
+
+    public void setMonedaCuenta(String monedaCuenta) {
+        this.monedaCuenta = monedaCuenta;
+    }
+
+    /** @param TipoBus el tipo de bus que proveera el servicio */
+    public char getTipoBus() {
+        return tipoBus;
+    }
+
+    public void setTipoBus(char tipoBus) {
+        this.tipoBus = tipoBus;
+    }
+
+    @Override
+    public String toString() {
+        return "Tiquete{" + "id=" + id + ", nombre=" + nombre + ", "
+                + "edad=" + edad + ", tipoServicio=" + tipoServicio + ", "
+                + "pesoCarga=" + pesoCarga + ", horaCreacion=" + horaCreacion + ", "
+                + "horaAtencion=" + horaAtencion + ", estado=" + estado + ", "
+                + "busAsignadoId=" + busAsignadoId + ", terminalOrigen=" + terminalOrigen + ", "
+                + "precioCalculado=" + precioCalculado + ", monedaCuenta=" + monedaCuenta + ", "
+                + "tipoBus=" + tipoBus + '}';
+    }
+    
+    
 
 }

@@ -216,10 +216,9 @@ public class MenuSistema {
         int opcion = 0;
 
         do {
-            String menu = "ATENCIÓN DE TIQUETES\n\n"
+            String menu = "GESTION DE TIQUETES\n\n"
                     + "1. Crear tiquete\n"
-                    + "2. Abordar (atender siguiente)\n"
-                    + "3. Volver\n";
+                    + "2. Volver\n";
 
             String seleccion = JOptionPane.showInputDialog(menu);
             if (seleccion == null) {
@@ -236,10 +235,6 @@ public class MenuSistema {
                         break;
 
                     case 2:
-                        abordarUI(sistema);
-                        break;
-
-                    case 3:
                         JOptionPane.showMessageDialog(null, "Volviendo...");
                         break;
 
@@ -251,36 +246,88 @@ public class MenuSistema {
                 JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
             }
 
-        } while (opcion != 3);
+        } while (opcion != 2);
     }
-
+    
     private static void crearTiqueteUI(Sistema sistema) {
-        String id = JOptionPane.showInputDialog("ID:");
+        try{
+             String nombre = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+            if (nombre == null || nombre.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "El nombre es obligatorio.");
+                return;
+            }
 
-        String tipoStr = JOptionPane.showInputDialog("Tipo: VIP, REGULAR, CARGA, EJECUTIVO");
+            String id = JOptionPane.showInputDialog("Ingrese el ID del tiquete:");
+            if (id == null || id.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "El ID es obligatorio.");
+                return;
+            }
 
-        double peso = 0;
-        if (tipoStr.equals("CARGA")) {
-            peso = Double.parseDouble(JOptionPane.showInputDialog("Peso:"));
+            int edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad del cliente:"));
+            if (edad <= 0) {
+                JOptionPane.showMessageDialog(null, "La edad debe ser mayor a 0.");
+                return;
+            }
+
+            String[] monedas = {"COLONES", "DOLARES"};
+            String monedaCuenta = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Seleccione la moneda de la cuenta:",
+                    "Moneda",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    monedas,
+                    monedas[0]
+            );
+
+            if (monedaCuenta == null) {
+                return;
+            }
+
+            String[] servicios = {"VIP", "REGULAR", "CARGA", "EJECUTIVO"};
+            String tipoStr = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Seleccione el tipo de servicio:",
+                    "Servicio",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    servicios,
+                    servicios[0]
+            );
+
+            if (tipoStr == null) {
+                return;
+            }
+
+            Tiquete.TipoServicio tipoServicio = Tiquete.TipoServicio.valueOf(tipoStr);
+
+            double pesoCarga = 0.0;
+            if (tipoServicio == Tiquete.TipoServicio.CARGA) {
+                pesoCarga = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el peso de la carga:"));
+                if (pesoCarga < 0) {
+                    JOptionPane.showMessageDialog(null, "El peso no puede ser negativo.");
+                    return;
+                }
+            }
+
+            Tiquete tiquete = new Tiquete(
+                    id,
+                    nombre,
+                    edad,
+                    monedaCuenta,
+                    tipoServicio,
+                    pesoCarga,
+                    sistema.getNombreTerminal()
+            );
+
+            sistema.asignarTicketABus(tiquete);
+        }catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar un número válido.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al crear tiquete: " + e.getMessage());
         }
-
-        int busId = Integer.parseInt(JOptionPane.showInputDialog("Bus ID:"));
-
-        Tiquete t = new Tiquete(
-                id,
-                Tiquete.TipoServicio.valueOf(tipoStr),
-                peso,
-                new java.util.Date(),
-                null,
-                Tiquete.Estado.PENDIENTE,
-                busId,
-                sistema.getNombreTerminal(),
-                0
-        );
-
-        sistema.crearTiquete(t, busId);
     }
-
+    
     private static void abordarUI(Sistema sistema) {
         int busId = Integer.parseInt(JOptionPane.showInputDialog("Bus ID:"));
         sistema.abordar(busId);
@@ -288,30 +335,7 @@ public class MenuSistema {
 
     // Menú para crear tiquete y asignarlo automáticamente
     public static void mostrarMenuCrearTiquete(Sistema sistema) {
-        String id = JOptionPane.showInputDialog("ID del tiquete:");
-        if (id == null || id.trim().isEmpty()) {
-            return;
-        }
-
-        String[] opciones = {"VIP", "REGULAR", "CARGA", "EJECUTIVO"};
-        String tipoStr = (String) JOptionPane.showInputDialog(null,"Seleccione tipo de servicio:", "Tipo de servicio",
-                JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-
-        if (tipoStr == null) {
-            return;
-        }
-
-        Tiquete.TipoServicio tipo = Tiquete.TipoServicio.valueOf(tipoStr);
-
-        double peso = 0;
-        if (tipo == Tiquete.TipoServicio.CARGA) {
-            peso = Double.parseDouble(JOptionPane.showInputDialog("Ingrese peso de carga:"));
-        }
-
-        Tiquete t = new Tiquete(id, tipo, peso, new java.util.Date(),
-                null, Tiquete.Estado.PENDIENTE, -1, sistema.getNombreTerminal(), 0);
-
-        sistema.asignarTicketABus(t);
+        crearTiqueteUI(sistema);
     }
 
 // Menú para abordar/atender tiquete
