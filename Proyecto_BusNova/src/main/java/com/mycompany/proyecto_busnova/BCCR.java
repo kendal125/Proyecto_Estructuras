@@ -13,61 +13,56 @@ import java.util.Date;
 
 /**
  * Clase encargada de consultar el tipo de cambio del dólar
- * utilizando el Web Service del Banco Central de Costa Rica (BCCR).
+ * utilizando el API del Banco Central de Costa Rica (BCCR).
  *
  * <p>
- * Esta versión está simplificada para el proyecto, ya que únicamente
- * obtiene el tipo de cambio de venta del día actual.
- * </p>
- *
- * <p>
- * Requiere que el usuario tenga un correo y un token válidos
- * registrados en el servicio del BCCR.
+ * Esta versión utiliza el nuevo API del SDDE y obtiene
+ * el tipo de cambio de venta del día actual.
  * </p>
  */
 public class BCCR {
 
     /**
-     * Correo electrónico registrado en el BCCR.
-     */
-    private static final String CORREO = "TU_CORREO";
-
-    /**
      * Token proporcionado por el BCCR.
      */
-    private static final String TOKEN = "TU_TOKEN";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJCQ0NSLVNEREUiLCJzdWIiOiJzdG1vcmFvcnRpekBnbWFpbC5jb20iLCJhdWQiOiJTRERFLVNpdGlvRXh0ZXJubyIsImV4cCI6MjUzNDAyMzAwODAwLCJuYmYiOjE3NzY2NTQzMjYsImlhdCI6MTc3NjY1NDMyNiwianRpIjoiYTU4MDQyNTMtODQ5NS00ZjNiLTg5NGUtNzhhYjU3NjdiOWViIiwiZW1haWwiOiJzdG1vcmFvcnRpekBnbWFpbC5jb20ifQ.m3KwYvQuFMsC3F0tuwSTdZuV3DKinkQTpXACs5NjyjE";
 
     /**
      * Obtiene el tipo de cambio de venta del día actual
-     * desde el Web Service del BCCR.
+     * desde el API del BCCR.
      *
      * @return tipo de cambio de venta como número decimal
      * @throws Exception si ocurre un error en la conexión o en el procesamiento
      */
     public double obtenerTipoCambioVenta() throws Exception {
 
-        // Obtener fecha actual en formato requerido por el BCCR
-        String fecha = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        // Fecha actual en formato requerido
+        String fecha = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 
-        // Construir la URL con los parámetros necesarios
+        // URL del API
         String urlStr =
-            "https://gee.bccr.fi.cr/Indicadores/Suscripciones/WS/wsindicadoreseconomicos.asmx/ObtenerIndicadoresEconomicosXML"
-            + "?Indicador=318"
-            + "&FechaInicio=" + fecha
-            + "&FechaFinal=" + fecha
-            + "&Nombre=BusNovaTech"
-            + "&SubNiveles=N"
-            + "&CorreoElectronico=" + CORREO
-            + "&Token=" + TOKEN;
+            "https://apim.bccr.fi.cr/SDDE/api/Bccr.GE.SDDE.Publico.Indicadores.API"
+            + "/indicadoresEconomicos/318/series"
+            + "?fechaInicio=" + fecha
+            + "&fechaFin=" + fecha
+            + "&idioma=es";
 
-        // Crear conexión HTTP
-        URL url = new URL(urlStr);
+        URL url = new URL (urlStr);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
 
-        // Leer la respuesta del servicio
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+        // Header con token
+        con.setRequestProperty("Authorization", "Bearer " + TOKEN);
+        con.setRequestProperty("Content-Type", "application/json");
+
+        int responseCode = con.getResponseCode();
+
+        BufferedReader in;
+        if (responseCode >= 200 && responseCode < 300) {
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        } else {
+            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        }
 
         String linea;
         String respuesta = "";
@@ -78,15 +73,89 @@ public class BCCR {
 
         in.close();
 
-        // Extraer el valor entre las etiquetas <NUM_VALOR>
-        int inicio = respuesta.indexOf("<NUM_VALOR>");
-        int fin = respuesta.indexOf("</NUM_VALOR>");
+        if (responseCode < 200 || responseCode >= 300) {
+            throw new Exception("HTTP " + responseCode + ": " + respuesta);
+        }
 
-        if (inicio == -1 || fin == -1) {
+        // Extraer valor del JSON
+        int inicioCampo = respuesta.indexOf("valorDatoPorPeriodo");
+
+        if (inicioCampo == -1) {
             throw new Exception("No se encontró el tipo de cambio en la respuesta del BCCR.");
         }
 
-        String valor = respuesta.substring(inicio + 11, fin);
+        String sub = respuesta.substring(inicioCampo);
+        int inicioValor = sub.indexOf(":") + 1;
+        int finValor = sub.indexOf("}");
+
+        if (inicioValor <= 0 || finValor <= 0 || inicioValor >= finValor) {
+            throw new Exception("No se pudo interpretar el valor del tipo de cambio.");
+        }
+
+        String valor = sub.substring(inicioValor, finValor).trim();
+
+        return Double.parseDouble(valor);
+    }
+    
+    public double obtenerTipoCambioCompra() throws Exception {
+
+        // Fecha actual en formato requerido
+        String fecha = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+
+        // URL del API
+        String urlStr =
+            "https://apim.bccr.fi.cr/SDDE/api/Bccr.GE.SDDE.Publico.Indicadores.API"
+            + "/indicadoresEconomicos/317/series"
+            + "?fechaInicio=" + fecha
+            + "&fechaFin=" + fecha
+            + "&idioma=es";
+
+        URL url = new URL(urlStr);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+
+        // Header con token
+        con.setRequestProperty("Authorization", "Bearer " + TOKEN);
+        con.setRequestProperty("Content-Type", "application/json");
+
+        int responseCode = con.getResponseCode();
+
+        BufferedReader in;
+        if (responseCode >= 200 && responseCode < 300) {
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        } else {
+            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        }
+
+        String linea;
+        String respuesta = "";
+
+        while ((linea = in.readLine()) != null) {
+            respuesta += linea;
+        }
+
+        in.close();
+
+        if (responseCode < 200 || responseCode >= 300) {
+            throw new Exception("HTTP " + responseCode + ": " + respuesta);
+        }
+
+        // Extraer valor del JSON
+        int inicioCampo = respuesta.indexOf("valorDatoPorPeriodo");
+
+        if (inicioCampo == -1) {
+            throw new Exception("No se encontró el tipo de cambio en la respuesta del BCCR.");
+        }
+
+        String sub = respuesta.substring(inicioCampo);
+        int inicioValor = sub.indexOf(":") + 1;
+        int finValor = sub.indexOf("}");
+
+        if (inicioValor <= 0 || finValor <= 0 || inicioValor >= finValor) {
+            throw new Exception("No se pudo interpretar el valor del tipo de cambio.");
+        }
+
+        String valor = sub.substring(inicioValor, finValor).trim();
 
         return Double.parseDouble(valor);
     }

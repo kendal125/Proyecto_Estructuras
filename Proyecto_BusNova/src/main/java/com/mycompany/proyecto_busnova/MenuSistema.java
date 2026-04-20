@@ -357,23 +357,61 @@ public class MenuSistema {
      *
      * @param sistema instancia del sistema principal
      */
-    public static void mostrarConsultaBCCR(Sistema sistema) {
-        try {
-            double tipoCambio = sistema.consultarTipoCambioBCCR();
+    public static void mostrarMenuBCCR(Sistema sistema) {
+        int opcion = 0;
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "TIPO DE CAMBIO BCCR\n\n"
-                    + "Tipo de cambio de venta del dólar: ₡" + tipoCambio
-            );
+        do {
+            String menu = "CONSULTA BCCR\n\n"
+                    + "1. Consultar tipo de cambio de venta\n"
+                    + "2. Consultar tipo de cambio de compra\n"
+                    + "3. Volver\n";
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "No se pudo consultar el tipo de cambio en este momento.\n"
-                    + "Detalle: " + e.getMessage()
-            );
-        }
+            String seleccion = JOptionPane.showInputDialog(menu);
+
+            if (seleccion == null) {
+                return;
+            }
+
+            try {
+                opcion = Integer.parseInt(seleccion);
+
+                switch (opcion) {
+                    case 1:
+                        double venta = sistema.consultarTipoCambioVenta();
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "TIPO DE CAMBIO BCCR\n\n"
+                                + "Tipo de cambio de venta: ₡" + venta
+                        );
+                        break;
+
+                    case 2:
+                        double compra = sistema.consultarTipoCambioCompra();
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "TIPO DE CAMBIO BCCR\n\n"
+                                + "Tipo de cambio de compra: ₡" + compra
+                        );
+                        break;
+
+                    case 3:
+                        JOptionPane.showMessageDialog(null, "Volviendo...");
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opción inválida.");
+                        break;
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "No se pudo consultar el tipo de cambio en este momento.\n"
+                        + "Detalle: " + e.getMessage()
+                );
+            }
+
+        } while (opcion != 3);
     }
 
     // Menú para mostrar colas de todos los buses
