@@ -153,7 +153,7 @@ public class Proyecto_BusNova {
                         break;
 
                     case 8:
-                        MenuSistema.mostrarConsultaBCCR(sistema);
+                        MenuSistema.mostrarMenuBCCR(sistema);
                         break;
 
                     case 9:

@@ -720,9 +720,15 @@ public class Sistema {
      * @return tipo de cambio de venta del día
      * @throws Exception si ocurre un error al consultar el servicio
      */
-    public double consultarTipoCambioBCCR() throws Exception {
+    public double consultarTipoCambioVenta() throws Exception {
         BCCR bccr = new BCCR();
         return bccr.obtenerTipoCambioVenta();
+    }
+    
+    
+    public double consultarTipoCambioCompra() throws Exception {
+        BCCR bccr = new BCCR();
+        return bccr.obtenerTipoCambioCompra();
     }
     
     /**
