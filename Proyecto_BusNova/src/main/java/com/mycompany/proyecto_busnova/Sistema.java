@@ -60,6 +60,11 @@ public class Sistema {
     private ListaTiquetes listaTiquetes;
 
     /**
+    * Grafo que representa las rutas entre localidades.
+    */
+    private Grafo grafo;
+    
+    /**
      * Constructor de la clase Sistema.
      * <p>
      * Inicializa las listas de buses y usuarios.
@@ -71,12 +76,13 @@ public class Sistema {
         listaBuses = new ListaBuses();
         listaUsuarios = new ListaUsuarios();
         listaTiquetes = new ListaTiquetes();
+        grafo = new Grafo();
 
         if (existeConfig()) {
             cargarConfig();
             cargarTiquetes();
             cargarColas();
-            
+            cargarGrafo();
         } 
         
         if (!listaUsuarios.existeUsuario("admin")) {
@@ -496,48 +502,48 @@ public class Sistema {
     }
     
     /**
- * Calcula el precio del tiquete según el tipo de servicio
- * y realiza la conversión a colones utilizando el tipo de cambio
- * del BCCR si el cliente utiliza esa moneda.
- *
- * @param t tiquete a calcular
- * @return precio final del tiquete
- */
-public double calcularPrecio(Tiquete tkt) {
-    double precio = 0.0;
+    * Calcula el precio del tiquete según el tipo de servicio
+    * y realiza la conversión a colones utilizando el tipo de cambio
+    * del BCCR si el cliente utiliza esa moneda.
+    *
+    * @param t tiquete a calcular
+    * @return precio final del tiquete
+    */
+    public double calcularPrecio(Tiquete tkt) {
+        double precio = 0.0;
 
-    // Precio base según servicio
-    switch (tkt.getTipoServicio()) {
-        case VIP:
-            precio = 20 + 100;
-            break;
-        case REGULAR:
-            precio = 20;
-            break;
-        case CARGA:
-            precio = 20 + (10 * tkt.getPesoCarga());
-            break;
-        case EJECUTIVO:
-            precio = 20 + 1000;
-            break;
-    }
-
-    // Integracion con BCCR
-    if (tkt.getMonedaCuenta().equalsIgnoreCase("COLONES")) {
-        try {
-            BCCR bccr = new BCCR();
-            double tipoCambio = bccr.obtenerTipoCambioVenta();
-
-            precio = precio * tipoCambio;
-
-        } catch (Exception e) {
-            System.out.println("Error al obtener tipo de cambio: " + e.getMessage());
+        // Precio base según servicio
+        switch (tkt.getTipoServicio()) {
+            case VIP:
+                precio = 20 + 100;
+                break;
+            case REGULAR:
+                precio = 20;
+                break;
+            case CARGA:
+                precio = 20 + (10 * tkt.getPesoCarga());
+                break;
+            case EJECUTIVO:
+                precio = 20 + 1000;
+                break;
         }
-    }
-    precio = Math.round(precio * 100.0) / 100.0;
 
-    return precio;
-}
+        // Integracion con BCCR
+        if (tkt.getMonedaCuenta().equalsIgnoreCase("COLONES")) {
+            try {
+                BCCR bccr = new BCCR();
+                double tipoCambio = bccr.obtenerTipoCambioVenta();
+
+                precio = precio * tipoCambio;
+
+            } catch (Exception e) {
+                System.out.println("Error al obtener tipo de cambio: " + e.getMessage());
+            }
+        }
+        precio = Math.round(precio * 100.0) / 100.0;
+
+        return precio;
+    }
 
     /**
      * Guarda un tiquete atendido en el archivo atendidos.json.
@@ -708,4 +714,109 @@ public double calcularPrecio(Tiquete tkt) {
         guardarColas();
     }
     
+    /**
+     * Consulta el tipo de cambio de venta del dólar desde el servicio web del BCCR.
+     *
+     * @return tipo de cambio de venta del día
+     * @throws Exception si ocurre un error al consultar el servicio
+     */
+    public double consultarTipoCambioBCCR() throws Exception {
+        BCCR bccr = new BCCR();
+        return bccr.obtenerTipoCambioVenta();
+    }
+    
+    /**
+    * Obtiene el grafo de rutas del sistema.
+    *
+    * @return instancia del grafo
+    */
+    public Grafo getGrafo() {
+        return grafo;
+    }
+    
+    /**
+    * Agrega una nueva localidad al grafo.
+    *
+    * @param id identificador de la localidad
+    */
+    public void agregarLocalidad(int id) {
+       grafo.agregarVertice(id);
+       guardarGrafo();
+    }
+
+    /**
+    * Agrega una nueva ruta entre dos localidades.
+    *
+    * @param origen localidad de origen
+    * @param destino localidad destino
+    * @param peso costo de la ruta
+    */
+    public void agregarRuta(int origen, int destino, double peso) {
+        grafo.agregarArista(origen, destino, peso);
+        guardarGrafo();
+    }
+
+    /**
+    * Muestra el grafo en formato texto.
+    *
+    * @return representación del grafo
+    */
+    public String mostrarGrafo() {
+        return grafo.mostrarGrafo();
+    }
+
+    /**
+     * Calcula la ruta más corta entre dos localidades.
+     *
+     * @param origen punto de inicio
+     * @param destino punto final
+     * @return resultado del cálculo
+     */
+    public String rutaMasCorta(int origen, int destino) {
+        return grafo.rutaMasCorta(origen, destino);
+    }
+
+    /**
+     * Verifica si dos localidades están conectadas.
+     *
+     * @param origen nodo inicial
+     * @param destino nodo final
+     * @return true si existe conexión
+     */
+    public boolean estanConectados(int origen, int destino) {
+        return grafo.estanConectados(origen, destino);
+    }
+    
+    /**
+     * Guarda el grafo en grafo.json.
+    */
+    public void guardarGrafo() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writerWithDefaultPrettyPrinter()
+                  .writeValue(new File("grafo.json"), grafo);
+        } catch (Exception e) {
+            System.out.println("Error al guardar grafo: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Carga el grafo desde grafo.json.
+    */
+    public void cargarGrafo() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            File file = new File("grafo.json");
+
+            if (!file.exists()) return;
+
+            grafo = mapper.readValue(file, Grafo.class);
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar grafo: " + e.getMessage());
+            grafo = new Grafo();
+        }
+    }
+
+
 }

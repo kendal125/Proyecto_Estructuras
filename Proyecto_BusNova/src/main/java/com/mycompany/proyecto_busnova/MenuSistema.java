@@ -351,10 +351,125 @@ public class MenuSistema {
             JOptionPane.showMessageDialog(null, "Entrada inválida.");
         }
     }
+    
+    /**
+     * Muestra en pantalla el tipo de cambio del dólar consultado desde el BCCR.
+     *
+     * @param sistema instancia del sistema principal
+     */
+    public static void mostrarConsultaBCCR(Sistema sistema) {
+        try {
+            double tipoCambio = sistema.consultarTipoCambioBCCR();
 
-// Menú para mostrar colas de todos los buses
+            JOptionPane.showMessageDialog(
+                    null,
+                    "TIPO DE CAMBIO BCCR\n\n"
+                    + "Tipo de cambio de venta del dólar: ₡" + tipoCambio
+            );
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "No se pudo consultar el tipo de cambio en este momento.\n"
+                    + "Detalle: " + e.getMessage()
+            );
+        }
+    }
+
+    // Menú para mostrar colas de todos los buses
     public static void mostrarMenuConsultarColas(Sistema sistema) {
         JOptionPane.showMessageDialog(null, sistema.mostrarColas());
+    }
+    
+    /**
+     * Muestra el menú de gestión de rutas y grafo.
+     * <p>
+     * Permite agregar localidades, crear rutas, visualizar el grafo,
+     * verificar conectividad y calcular rutas más cortas.
+     * </p>
+     *
+     * @param sistema instancia del sistema principal
+    */
+    public static void mostrarMenuGrafo(Sistema sistema) {
+
+        int opcion = 0;
+
+        do {
+            String menu = "RUTAS Y GRAFO\n\n"
+                    + "1. Agregar localidad\n"
+                    + "2. Agregar ruta\n"
+                    + "3. Mostrar grafo\n"
+                    + "4. Verificar conexión\n"
+                    + "5. Ruta más corta\n"
+                    + "6. Volver\n";
+
+            String input = JOptionPane.showInputDialog(menu);
+
+            if (input == null) return;
+
+            try {
+                opcion = Integer.parseInt(input);
+
+                switch (opcion) {
+
+                    case 1:
+                        int loc = Integer.parseInt(
+                                JOptionPane.showInputDialog("ID de la localidad:")
+                        );
+                        sistema.agregarLocalidad(loc);
+                        JOptionPane.showMessageDialog(null, "Localidad agregada.");
+                        break;
+
+                    case 2:
+                        int origen = Integer.parseInt(
+                                JOptionPane.showInputDialog("Origen:")
+                        );
+                        int destino = Integer.parseInt(
+                                JOptionPane.showInputDialog("Destino:")
+                        );
+                        double peso = Double.parseDouble(
+                                JOptionPane.showInputDialog("Peso:")
+                        );
+
+                        sistema.agregarRuta(origen, destino, peso);
+                        JOptionPane.showMessageDialog(null, "Ruta agregada.");
+                        break;
+
+                    case 3:
+                        JOptionPane.showMessageDialog(null, sistema.mostrarGrafo());
+                        break;
+
+                    case 4:
+                        int o = Integer.parseInt(JOptionPane.showInputDialog("Origen:"));
+                        int d = Integer.parseInt(JOptionPane.showInputDialog("Destino:"));
+
+                        boolean conectado = sistema.estanConectados(o, d);
+
+                        JOptionPane.showMessageDialog(null,
+                                conectado ? "Sí están conectados" : "No están conectados");
+                        break;
+
+                    case 5:
+                        int o2 = Integer.parseInt(JOptionPane.showInputDialog("Origen:"));
+                        int d2 = Integer.parseInt(JOptionPane.showInputDialog("Destino:"));
+
+                        JOptionPane.showMessageDialog(null,
+                                sistema.rutaMasCorta(o2, d2));
+                        break;
+
+                    case 6:
+                        JOptionPane.showMessageDialog(null, "Volviendo...");
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opción inválida.");
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error en entrada de datos.");
+            }
+
+        } while (opcion != 6);
     }
 
     /*

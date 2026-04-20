@@ -149,11 +149,11 @@ public class Proyecto_BusNova {
                         break;
 
                     case 7:
-                        JOptionPane.showMessageDialog(null, "En desarrollo...");
+                        MenuSistema.mostrarMenuGrafo(sistema);
                         break;
 
                     case 8:
-                        JOptionPane.showMessageDialog(null, "En desarrollo...");
+                        MenuSistema.mostrarConsultaBCCR(sistema);
                         break;
 
                     case 9:
