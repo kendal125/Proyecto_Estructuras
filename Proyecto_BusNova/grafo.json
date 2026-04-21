@@ -1,0 +1,35 @@
+{
+  "adyacencia" : {
+    "1" : [ {
+      "destino" : 2,
+      "peso" : 2.0
+    }, {
+      "destino" : 2,
+      "peso" : 23.0
+    }, {
+      "destino" : 2,
+      "peso" : 2.0
+    }, {
+      "destino" : 2,
+      "peso" : 12.0
+    } ],
+    "2" : [ {
+      "destino" : 4,
+      "peso" : 12.0
+    }, {
+      "destino" : 4,
+      "peso" : 12.0
+    } ],
+    "3" : [ {
+      "destino" : 2,
+      "peso" : 12.0
+    } ],
+    "4" : [ ]
+  },
+  "nombresLocalidades" : {
+    "1" : "cartago",
+    "2" : "Heredia",
+    "4" : "guanacaste",
+    "3" : "Alajuela"
+  }
+}

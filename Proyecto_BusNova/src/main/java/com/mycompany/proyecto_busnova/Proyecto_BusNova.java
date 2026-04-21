@@ -29,129 +29,149 @@ import javax.swing.JOptionPane;
 public class Proyecto_BusNova {
 
     public static void main(String[] args) {
-        
-        
-        Sistema sistema = new Sistema();
 
-        if (!sistema.existeConfig()) {
+        try { 
 
-            String nombre = JOptionPane.showInputDialog("Ingrese nombre de la terminal asignada posteriormente:");
-            if (nombre == null) return;
+            Sistema sistema = new Sistema();
 
-            sistema.setNombreTerminal(nombre);
+            if (!sistema.existeConfig()) {
 
-            int cantidad = Integer.parseInt(
-                    JOptionPane.showInputDialog("Cantidad total de buses (mínimo 2):"));
+                String nombre = JOptionPane.showInputDialog("Ingrese nombre de la terminal asignada posteriormente:");
+                if (nombre == null) return;
 
-            if (cantidad < 2) {
-                JOptionPane.showMessageDialog(null, " Asigne una nueva cantidad debe haber mínimo 2 buses.");
+                sistema.setNombreTerminal(nombre);
+
+                int cantidad = 0;
+
+                try { 
+                    cantidad = Integer.parseInt(
+                            JOptionPane.showInputDialog("Cantidad total de buses (mínimo 2):"));
+
+                    if (cantidad < 2) {
+                        JOptionPane.showMessageDialog(null, " Asigne una nueva cantidad debe haber mínimo 2 buses.");
+                        return;
+                    }
+
+                } catch (NumberFormatException e) { 
+                    JOptionPane.showMessageDialog(null, "Debe ingresar un número válido.");
+                    return;
+                }
+
+                sistema.crearBuses(cantidad);
+
+                int cantUsuarios = 0;
+
+                try { 
+                    cantUsuarios = Integer.parseInt(
+                            JOptionPane.showInputDialog("Cantidad de usuarios:"));
+                } catch (NumberFormatException e) { 
+                    JOptionPane.showMessageDialog(null, "Cantidad inválida.");
+                    return;
+                }
+
+                for (int i = 0; i < cantUsuarios; i++) {
+                    String user = JOptionPane.showInputDialog("Username:");
+                    String pass = JOptionPane.showInputDialog("contrasenia:");
+                    sistema.agregarUsuario(user, pass);
+                }
+
+                sistema.guardarConfiguracion();
+
+                JOptionPane.showMessageDialog(null, "Sistema configurado correctamente.");
+            }
+
+            Auth auth = new Auth(sistema.getListaUsuarios());
+
+            if (!auth.validarLogin()) {
+                JOptionPane.showMessageDialog(null, "Acceso denegado.");
                 return;
             }
 
-            sistema.crearBuses(cantidad);
+            int opcion;
 
-            int cantUsuarios = Integer.parseInt(
-                    JOptionPane.showInputDialog("Cantidad de usuarios:"));
+            do {
 
-            for (int i = 0; i < cantUsuarios; i++) {
-                String user = JOptionPane.showInputDialog("Username:");
-                String pass = JOptionPane.showInputDialog("contrasenia:");
-                sistema.agregarUsuario(user, pass);
-            }
+                String menu = "TERMINAL DE BUSES: " + sistema.getNombreTerminal() + "\n\n"
+                        + "1. Configuración del sistema \n"
+                        + "2. Administrar buses\n"
+                        + "3. Administrar usuarios\n"
+                        + "4. Gestión de tiquetes\n"
+                        + "5. Atención de tiquetes\n"
+                        + "6. Consulta de colas\n"
+                        + "7. Rutas y grafo\n"
+                        + "8. Consulta BCCR\n"
+                        + "9. Reportes\n"
+                        + "10. Salir\n";
 
-            sistema.guardarConfiguracion();
+                String entrada = JOptionPane.showInputDialog(menu);
 
-            JOptionPane.showMessageDialog(null, "Sistema configurado correctamente.");
+                if (entrada == null) return;
+
+                try {
+                    opcion = Integer.parseInt(entrada);
+                } catch (NumberFormatException e) { 
+                    JOptionPane.showMessageDialog(null, "Ingrese un número válido.");
+                    opcion = 0; 
+                    continue; 
+                }
+
+                switch (opcion) {
+
+                    case 1:
+                        MenuSistema.mostrarMenuConfig(sistema);
+                        break;
+
+                    case 2:
+                        MenuSistema.mostrarMenuAdminBuses(sistema);
+                        /*
+                        String nuevo = JOptionPane.showInputDialog("Nuevo nombre:");
+                        if (nuevo != null && !nuevo.trim().equals("")) {
+                            sistema.cambiarNombreTerminal(nuevo);
+                            JOptionPane.showMessageDialog(null, "Su nombre asignado ha sido actualizado de manera exitosa.");
+                        }
+                        */
+                        break;
+
+                    case 3:
+                        MenuSistema.mostrarMenuAdminUsuarios(sistema);
+                        break;
+
+                    case 4:
+                        MenuSistema.mostrarMenuTiquetes(sistema);
+                        break;
+
+                    case 5:
+                        MenuSistema.mostrarMenuAbordarTiquete(sistema);
+                        break;
+
+                    case 6:
+                        MenuSistema.mostrarMenuConsultarColas(sistema);
+                        break;
+
+                    case 7:
+                        MenuSistema.mostrarMenuGrafo(sistema);
+                        break;
+
+                    case 8:
+                        MenuSistema.mostrarMenuBCCR(sistema);
+                        break;
+
+                    case 9:
+                        MenuSistema.mostrarHistorial(sistema);
+                        break;
+
+                    case 10:
+                        JOptionPane.showMessageDialog(null, "Saliendo...");
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opción no permitida.");
+                }
+
+            } while (opcion != 10);
+
+        } catch (Exception e) { 
+            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage());
         }
-
-        Auth auth = new Auth(sistema.getListaUsuarios());
-
-        if (!auth.validarLogin()) {
-            JOptionPane.showMessageDialog(null, "Acceso denegado.");
-            return;
-        }
-        
-        int opcion;
-
-        do {
-
-            String menu = "TERMINAL DE BUSES: " + sistema.getNombreTerminal() + "\n\n"
-                    + "1. Configuración del sistema \n"
-                    + "2. Administrar buses\n"
-                    + "3. Administrar usuarios\n"
-                    + "4. Gestión de tiquetes\n"
-                    + "5. Atención de tiquetes\n"
-                    + "6. Consulta de colas\n"
-                    + "7. Rutas y grafo\n"
-                    + "8. Consulta BCCR\n"
-                    + "9. Reportes\n"
-                    + "10. Salir\n";
-
-            String entrada = JOptionPane.showInputDialog(menu);
-
-            if (entrada == null) return;
-
-            opcion = Integer.parseInt(entrada);
-
-            switch (opcion) {
-
-                case 1:
-                    MenuSistema.mostrarMenuConfig(sistema);
-
-                    break;
-
-                case 2:
-                    MenuSistema.mostrarMenuAdminBuses(sistema);
-                    /*
-                    String nuevo = JOptionPane.showInputDialog("Nuevo nombre:");
-                    if (nuevo != null && !nuevo.trim().equals("")) {
-                        sistema.cambiarNombreTerminal(nuevo);
-                        JOptionPane.showMessageDialog(null, "Su nombre asignado ha sido actualizado de manera exitosa.");
-                    }
-                    */
-                    break;
-
-                case 3:
-                    MenuSistema.mostrarMenuAdminUsuarios(sistema);
-                    break;
-                    
-                case 4:
-                    MenuSistema.mostrarMenuTiquetes(sistema);
-                    break;
-
-                case 5:
-                    MenuSistema.mostrarMenuAbordarTiquete(sistema);
-                    break;
-
-                case 6:
-                    MenuSistema.mostrarMenuConsultarColas(sistema);
-                    break;
-                    
-                case 7:
-                    JOptionPane.showMessageDialog(null, "Opcion en desarrollo");
-                    break;
-                    
-                case 8:
-                    JOptionPane.showMessageDialog(null, "Opcion en desarrollo");
-                    break;
-                    
-                case 9:
-                    JOptionPane.showMessageDialog(null, sistema.mostrarTiquetes());
-                    break;
-
-                case 10:
-                    sistema.guardarConfiguracion();
-                    sistema.guardarTiquetes();
-                    sistema.guardarColas();
-                    JOptionPane.showMessageDialog(null, "Saliendo...");
-                    break;
-                    
-            
-                default:
-                    JOptionPane.showMessageDialog(null, "Opción no permitida.");
-            }
-
-        } while (opcion != 10);
     }
 }
-

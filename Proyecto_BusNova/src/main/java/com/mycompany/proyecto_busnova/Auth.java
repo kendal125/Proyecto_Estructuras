@@ -57,7 +57,7 @@ public class Auth {
             String user = cred[0];
             String pass = cred[1];
 
-            if (user == null || pass == null) return false; // cancelado
+            if (user == null || pass == null) return false; 
 
             if (listaUsuarios.validarLogin(user, pass)) {
                 JOptionPane.showMessageDialog(null, "Bienvenido " + user);
